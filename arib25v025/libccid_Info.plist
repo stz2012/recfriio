@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundlePackageType</key>
+	<string>BNDL</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>0.0.1d1</string>
+	<key>ifdCapabilities</key>
+	<string>0x00000001</string>
+
+	<!-- Possible values for ifdCapabilities bits
+	1: IFD_GENERATE_HOTPLUG
+	   plugging the reader calls pcscd \-\-hotplug
+
+	Default value is 0x00000001
+	-->
+
+	<key>ifdProtocolSupport</key>
+	<string>0x00000001</string>
+	<key>ifdVersionNumber</key>
+	<string>0x00000001</string>
+
+	<key>ifdLogLevel</key>
+	<string>0x0003</string>
+
+	<!-- Possible values for ifdLogLevel
+	1: CRITICAL  important error messages
+	2: INFO      informative messages like what reader was detected
+	4: COMM      a dump of all the bytes exchanged between the host and
+	             the reader
+	8: PERIODIC  periodic info when pcscd test if a card is present
+	             (every 1/10 of a second)
+
+	The final value is a OR of these values
+
+	Default value: 3 (CRITICAL + INFO)
+	-->
+
+	<key>ifdDriverOptions</key>
+	<string>0x0000</string>
+
+	<!-- Possible values for ifdDriverOptions
+	1: DRIVER_OPTION_CCID_EXCHANGE_AUTHORIZED
+		the CCID Exchange command is allowed. You can use it through
+		SCardControl(hCard, IOCTL_SMARTCARD_VENDOR_IFD_EXCHANGE, ...) 
+
+	2: DRIVER_OPTION_GEMPC_TWIN_KEY_APDU
+		If set the GemPC Twin and GemPC Key readers with be configured
+		so that the T=1 TPDU protocol is done by the firmware instead of
+		the driver.
+		This switches the reader in APDU mode and also in EMV mode so
+		may not work with non EMV cards.
+
+	4: DRIVER_OPTION_USE_BOGUS_FIRMWARE
+		Some reader firmwares have bugs. By default the driver refuses
+		to work with such firmware versions. If your reader is rejected
+		because of the firmware (log message: "Firmware (x.y) is
+		bogus!") you can:
+		- upgrade your reader firmware (not all readers can do that)
+		or
+		- get another reader with a new/bugfree firmware
+		or
+		- activate this option but you will have problems depending on
+		  the bug
+
+	8: DRIVER_OPTION_RESET_ON_CLOSE
+		This option may be required on Linux 2.4 so that the
+		device reset if sequencial (bSeq) counter and can be
+		reused if pcscd restart. Otherwise the reader needs to
+		be unplugged/replugged.
+
+	bits 4 & 5: (values 0, 16, 32, 48)
+	  0: power on the card at 5V (default value)
+	 16: power on the card at 3V and then, it 3V fails use 5V
+	 32: power on the card at 1.8V, then 3V and then 5V
+	 48: let the reader decide
+
+	Default value: 0
+	-->
+
+	<key>CFBundleExecutable</key>
+	<string>libccid.so.1.3.1</string>
+
+	<key>ifdManufacturerString</key>
+	<string>Ludovic Rousseau (ludovic.rousseau@free.fr)</string>
+
+	<key>ifdProductString</key>
+	<string>Generic CCID driver v1.3.1</string>
+
+	<key>ifdVendorID</key>
+	<array>
+		<string>0x08E6</string>
+		<string>0x08E6</string>
+		<string>0x08E6</string>
+		<string>0x08E6</string>
+		<string>0x08E6</string>
+		<string>0x08E6</string>
+		<string>0x08E6</string>
+		<string>0x08E6</string>
+		<string>0x08E6</string>
+		<string>0x04E6</string>
+		<string>0x04E6</string>
+		<string>0x04E6</string>
+		<string>0x04E6</string>
+		<string>0x04E6</string>
+		<string>0x04E6</string>
+		<string>0x04E6</string>
+		<string>0x04E6</string>
+		<string>0x04E6</string>
+		<string>0x04E6</string>
+		<string>0x04E6</string>
+		<string>0x04E6</string>
+		<string>0x04E6</string>
+		<string>0x04E6</string>
+		<string>0x076B</string>
+		<string>0x076B</string>
+		<string>0x076B</string>
+		<string>0x076B</string>
+		<string>0x076B</string>
+		<string>0x076B</string>
+		<string>0x076B</string>
+		<string>0x076B</string>
+		<string>0x076B</string>
+		<string>0x076B</string>
+		<string>0x0783</string>
+		<string>0x0783</string>
+		<string>0x0783</string>
+		<string>0x0783</string>
+		<string>0x0783</string>
+		<string>0x0783</string>
+		<string>0x09C3</string>
+		<string>0x09C3</string>
+		<string>0x047B</string>
+		<string>0x413c</string>
+		<string>0x413c</string>
+		<string>0x046a</string>
+		<string>0x046a</string>
+		<string>0x046a</string>
+		<string>0x046a</string>
+		<string>0x072f</string>
+		<string>0x0b97</string>
+		<string>0x0b97</string>
+		<string>0x0D46</string>
+		<string>0x0D46</string>
+		<string>0x0d46</string>
+		<string>0x0d46</string>
+		<string>0x0d46</string>
+		<string>0x0d46</string>
+		<string>0x073D</string>
+		<string>0x073D</string>
+		<string>0x073D</string>
+		<string>0x073D</string>
+		<string>0x073D</string>
+		<string>0x0DC3</string>
+		<string>0x0DC3</string>
+		<string>0x09BE</string>
+		<string>0x0416</string>
+		<string>0x03F0</string>
+		<string>0x03F0</string>
+		<string>0x0B81</string>
+		<string>0x058F</string>
+		<string>0x058F</string>
+		<string>0x15E1</string>
+		<string>0x0BF8</string>
+		<string>0x0BF8</string>
+		<string>0x0DF6</string>
+		<string>0x0973</string>
+		<string>0x0471</string>
+		<string>0x04B9</string>
+		<string>0x1059</string>
+		<string>0x1059</string>
+		<string>0x17EF</string>
+		<string>0x19E7</string>
+		<string>0x09C3</string>
+		<string>0x0783</string>
+		<string>0x0C4B</string>
+	</array>
+
+	<key>ifdProductID</key>
+	<array>
+		<string>0x3437</string>
+		<string>0x3438</string>
+		<string>0x4433</string>
+		<string>0x3478</string>
+		<string>0x3479</string>
+		<string>0x3480</string>
+		<string>0x34EC</string>
+		<string>0xACE0</string>
+		<string>0x1359</string>
+		<string>0x5111</string>
+		<string>0x5113</string>
+		<string>0x5115</string>
+		<string>0x5116</string>
+		<string>0x5117</string>
+		<string>0x5119</string>
+		<string>0x511A</string>
+		<string>0x511C</string>
+		<string>0x511D</string>
+		<string>0x5120</string>
+		<string>0x5121</string>
+		<string>0xE001</string>
+		<string>0x5410</string>
+		<string>0xE003</string>
+		<string>0x1021</string>
+		<string>0x3021</string>
+		<string>0x3621</string>
+		<string>0x3821</string>
+		<string>0x4321</string>
+		<string>0x5121</string>
+		<string>0x5125</string>
+		<string>0x5321</string>
+		<string>0x6622</string>
+		<string>0xA022</string>
+		<string>0x0006</string>
+		<string>0x0007</string>
+		<string>0x0008</string>
+		<string>0x0009</string>
+		<string>0x0010</string>
+		<string>0x9002</string>
+		<string>0x0013</string>
+		<string>0x0014</string>
+		<string>0x020B</string>
+		<string>0x2100</string>
+		<string>0X2101</string>
+		<string>0x0005</string>
+		<string>0x0010</string>
+		<string>0x002D</string>
+		<string>0x003E</string>
+		<string>0x90cc</string>
+		<string>0x7762</string>
+		<string>0x7772</string>
+		<string>0x3001</string>
+		<string>0x3002</string>
+		<string>0x3003</string>
+		<string>0x3010</string>
+		<string>0x4000</string>
+		<string>0x4001</string>
+		<string>0x0B00</string>
+		<string>0x0C00</string>
+		<string>0x0C01</string>
+		<string>0x0007</string>
+		<string>0x0008</string>
+		<string>0x1004</string>
+		<string>0x1102</string>
+		<string>0x0002</string>
+		<string>0x3815</string>
+		<string>0x1024</string>
+		<string>0x0824</string>
+		<string>0x0200</string>
+		<string>0x9520</string>
+		<string>0x9522</string>
+		<string>0x2007</string>
+		<string>0x1005</string>
+		<string>0x1006</string>
+		<string>0x800A</string>
+		<string>0x0003</string>
+		<string>0x040F</string>
+		<string>0x1400</string>
+		<string>0x000C</string>
+		<string>0x000D</string>
+		<string>0x1003</string>
+		<string>0x0002</string>
+		<string>0x0008</string>
+		<string>0x0003</string>
+		<string>0x0300</string>
+	</array>
+
+	<key>ifdFriendlyName</key>
+	<array>
+		<string>Gemplus GemPC Twin</string>
+		<string>Gemplus GemPC Key</string>
+		<string>Gemplus GemPC433 SL</string>
+		<string>Gemplus GemPC Pinpad</string>
+		<string>Gemplus GemCore POS Pro</string>
+		<string>Gemplus GemCore SIM Pro</string>
+		<string>Gemplus GemPC Express</string>
+		<string>Verisign Secure Token</string>
+		<string>VeriSign Secure Storage Token</string>
+		<string>SCM SCR 331-DI</string>
+		<string>SCM SCR 333</string>
+		<string>SCM SCR 335</string>
+		<string>SCM SCR 3310</string>
+		<string>SCM SCR 3320</string>
+		<string>SCM SCR 3340 ExpressCard54</string>
+		<string>SCM SCR 3310 NTTCom</string>
+		<string>Axalto Reflex USB v3</string>
+		<string>SCM SCR 3311</string>
+		<string>SCM SCR 331-DI NTTCom</string>
+		<string>SCM SDI 010</string>
+		<string>SCM SCR 331</string>
+		<string>SCM SCR 355</string>
+		<string>SCM SPR 532</string>
+		<string>OmniKey CardMan 1021</string>
+		<string>OmniKey CardMan 3121</string>
+		<string>OmniKey CardMan 3621</string>
+		<string>OmniKey CardMan 3821</string>
+		<string>OmniKey CardMan 4321</string>
+		<string>OmniKey CardMan 5121</string>
+		<string>OmniKey CardMan 5125</string>
+		<string>OmniKey CardMan 5321</string>
+		<string>OmniKey CardMan 6121</string>
+		<string>Teo by Xiring</string>
+		<string>C3PO LTC31</string>
+		<string>C3PO TLTC2USB</string>
+		<string>C3PO LTC32 USBv2 with keyboard support</string>
+		<string>C3PO KBR36</string>
+		<string>C3PO LTC32</string>
+		<string>C3PO TLTC2USB</string>
+		<string>ActivCard USB Reader 3.0</string>
+		<string>Activkey Sim</string>
+		<string>Silitek SK-3105</string>
+		<string>Dell keyboard SK-3106</string>
+		<string>Dell smart card reader keyboard</string>
+		<string>Cherry XX33</string>
+		<string>Cherry XX44</string>
+		<string>Cherry ST1044U</string>
+		<string>Cherry SmartTerminal ST-2XXX</string>
+		<string>ACS ACR 38U-CCID</string>
+		<string>O2 Micro Oz776</string>
+		<string>O2 Micro Oz776</string>
+		<string>KOBIL KAAN Base</string>
+		<string>KOBIL KAAN Advanced</string>
+		<string>KOBIL KAAN SIM III</string>
+		<string>KOBIL EMV CAP - SecOVID Reader III</string>
+		<string>KOBIL mIDentity</string>
+		<string>KOBIL mIDentity</string>
+		<string>Eutron Digipass 860</string>
+		<string>Eutron SIM Pocket Combo</string>
+		<string>Eutron Smart Pocket</string>
+		<string>Eutron CryptoIdentity</string>
+		<string>Eutron CryptoIdentity</string>
+		<string>Athena ASE IIIe</string>
+		<string>Athena ASEDrive IIIe KB</string>
+		<string>SmartEpad</string>
+		<string>Winbond</string>
+		<string>HP USB Smart Card Keyboard</string>
+		<string>HP USB Smartcard Reader</string>
+		<string>id3 CL1356D</string>
+		<string>Alcor Micro AU9520</string>
+		<string>Alcor Micro AU9522</string>
+		<string>RSA SecurID</string>
+		<string>Fujitsu Siemens SmartCard Keyboard USB 2A</string>
+		<string>Fujitsu Siemens SmartCard USB 2A</string>
+		<string>Sitecom USB simcard reader MD-010</string>
+		<string>SchlumbergerSema Cyberflex Access</string>
+		<string>Philips JCOP41V221</string>
+		<string>SafeNet IKey4000</string>
+		<string>G&D CardToken 350</string>
+		<string>G&D CardToken 550</string>
+		<string>Lenovo Integrated Smart Card Reader</string>
+		<string>Charismathics token</string>
+		<string>ActivCard USB Reader 2.0</string>
+		<string>C3PO LTC31</string>
+		<string>Reiner-SCT cyberJack pinpad(a)</string>
+	</array>
+
+	<key>Copyright</key>
+	<string>This driver is protected by terms of the GNU Lesser General Public License version 2.1, or (at your option) any later version.</string>
+
+</dict>
+</plist>
