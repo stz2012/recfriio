@@ -51,18 +51,36 @@ void usage(char *argv[])
 		<< " channel recsec destfile" << std::endl;
 	std::cerr << "Channels:" << std::endl;
 	std::cerr << "  13 - 62 : UHF13 - UHF62" << std::endl;
-	std::cerr << "  B1 : BS-Asahi      C1 : 110CS #1" << std::endl;
-	std::cerr << "  B2 : BS-i          C2 : 110CS #2" << std::endl;
-	std::cerr << "  B3 : WOWOW         C3 : 110CS #3" << std::endl;
-	std::cerr << "  B4 : BS-Japan      C4 : 110CS #4" << std::endl;
-	std::cerr << "  B5 : BS11          C5 : 110CS #5" << std::endl;
-	std::cerr << "  B6 : Star Channel  C6 : 110CS #6" << std::endl;
-	std::cerr << "  B7 : TwellV        C7 : 110CS #7" << std::endl;
-	std::cerr << "  B8 : BS-NTV        C8 : 110CS #8" << std::endl;
-	std::cerr << "  B9 : BS-Fuji       C9 : 110CS #9" << std::endl;
-	std::cerr << "  B10: NHK BS1/BS2   C10: 110CS #a" << std::endl;
-	std::cerr << "  B11: NHK hi        C11: 110CS #b" << std::endl;
-	std::cerr << "                     C12: 110CS #c" << std::endl;
+	std::cerr << "  B1 : BS朝日               C1 : 110CS #1" << std::endl;
+	std::cerr << "  B2 : BS-TBS               C2 : 110CS #2" << std::endl;
+	std::cerr << "  B3 : BSジャパン           C3 : 110CS #3" << std::endl;
+	std::cerr << "  B4 : WOWOWプライム        C4 : 110CS #4" << std::endl;
+	std::cerr << "  B5 : WOWOWライブ          C5 : 110CS #5" << std::endl;
+	std::cerr << "  B6 : WOWOWシネマ          C6 : 110CS #6" << std::endl;
+	std::cerr << "  B7 : スターチャンネル2/3  C7 : 110CS #7" << std::endl;
+	std::cerr << "  B8 : BSアニマックス       C8 : 110CS #8" << std::endl;
+	std::cerr << "  B9 : ディズニーチャンネル C9 : 110CS #9" << std::endl;
+	std::cerr << "  B10: BS11                 C10: 110CS #a" << std::endl;
+	std::cerr << "  B11: スターチャンネル1    C11: 110CS #b" << std::endl;
+	std::cerr << "  B12: TwellV               C12: 110CS #c" << std::endl;
+	std::cerr << "  B13: FOX bs238" << std::endl;
+	std::cerr << "  B14: BSスカパー!" << std::endl;
+	std::cerr << "  B15: 放送大学" << std::endl;
+	std::cerr << "  B16: BS日テレ" << std::endl;
+	std::cerr << "  B17: BSフジ" << std::endl;
+	std::cerr << "  B18: NHK BS1" << std::endl;
+	std::cerr << "  B19: NHK BSプレミアム" << std::endl;
+	std::cerr << "  B20: 地デジ難視聴1(NHK/NHK-E/CX)" << std::endl;
+	std::cerr << "  B21: 地デジ難視聴2(NTV/TBS/EX/TX)" << std::endl;
+	std::cerr << "  B22: グリーンチャンネル" << std::endl;
+	std::cerr << "  B23: J SPORTS 1" << std::endl;
+	std::cerr << "  B24: J SPORTS 2" << std::endl;
+	std::cerr << "  B25: IMAGICA BS" << std::endl;
+	std::cerr << "  B26: J SPORTS 3" << std::endl;
+	std::cerr << "  B27: J SPORTS 4" << std::endl;
+	std::cerr << "  B28: BS釣りビジョン" << std::endl;
+	std::cerr << "  B29: 日本映画専門チャンネル" << std::endl;
+	std::cerr << "  B30: D-Life" << std::endl;
 	exit(1);
 }
 
@@ -226,8 +244,8 @@ main(int argc, char *argv[])
 			}
 			break;
 		case BAND_BS:
-			if (args.channel < 1 || 11 < args.channel) {
-				std::cerr << "channel must be (B1 <= channel <= B11)." << std::endl;
+			if (args.channel < 1 || 30 < args.channel) {
+				std::cerr << "channel must be (B1 <= channel <= B30)." << std::endl;
 				exit(1);
 			}
 			break;

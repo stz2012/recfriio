@@ -2,6 +2,7 @@
 // 黒凡
 
 #include <glib.h>
+#include <string.h>
 #include "usbops.hpp"
 #include "FriioBlack.hpp"
 
@@ -166,33 +167,45 @@ static void SetChannel_Black(int fd, const uint32_t dwSpace, const uint32_t dwCh
 	};
 	
 	// チューニングシーケンス可変部分
-	static const uint8_t PllConfA[] = {0x08, 0x08, 0x08, 0x08, 0x09, 0x09, 0x09, 0x0A, 0x0A, 0x0A, 0x0A, 0x0C, 0x0C, 0x0D, 0x0D, 0x0D, 0x0E, 0x0E, 0x0E, 0x0F, 0x0F, 0x0F, 0x10};	// 1/17回目 +40
-	static const uint8_t PllConfB[] = {0x32, 0x32, 0x80, 0x80, 0x64, 0x64, 0x64, 0x00, 0x00, 0x4C, 0x4C, 0x9A, 0xEA, 0x3A, 0x8A, 0xDA, 0x2A, 0x7A, 0xCA, 0x1A, 0x6A, 0xBA, 0x0A};	// 2/18回目 +40
-	static const uint8_t PllConfC[] = {0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};	// 75回目	+02
-	static const uint8_t PllConfD[] = {0x10, 0x11, 0x30, 0x31, 0x90, 0x91, 0x92, 0xD0, 0xD1, 0xF1, 0xF2, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};	// 76回目	+02
+	static const uint8_t PllConfA[] = {0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0B, 0x0B, 0x0B, 0x0B, 0x0B, 0x0B, 0x0C, 0x0C, 0x0D, 0x0D, 0x0D, 0x0E, 0x0E, 0x0E, 0x0F, 0x0F, 0x0F, 0x10};	// 1/17回目 +40
+	static const uint8_t PllConfB[] = {0x32, 0x32, 0x80, 0x80, 0xCC, 0xCC, 0x18, 0x18, 0x18, 0x64, 0x64, 0x64, 0xB2, 0xB2, 0xB2, 0x00, 0x00, 0x4C, 0x4C, 0x98, 0x98, 0xE4, 0xE4, 0xE4, 0x32, 0x32, 0x32, 0x7E, 0x7E, 0x7E, 0x9A, 0xEA, 0x3A, 0x8A, 0xDA, 0x2A, 0x7A, 0xCA, 0x1A, 0x6A, 0xBA, 0x0A};	// 2/18回目 +40
+	static const uint8_t PllConfC[] = {0x40, 0x40, 0x40, 0x40, 0x44, 0x44, 0x44, 0x46, 0x46, 0x40, 0x40, 0x40, 0x46, 0x46, 0x46, 0x40, 0x40, 0x40, 0x40, 0x43, 0x43, 0x47, 0x47, 0x47, 0x47, 0x47, 0x47, 0x47, 0x47, 0x47, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};	// 75回目	+02
+	static const uint8_t PllConfD[] = {0x10, 0x11, 0x30, 0x31, 0x50, 0x51, 0x70, 0x71, 0x72, 0x90, 0x91, 0x92, 0xB0, 0xB1, 0xB2, 0xD0, 0xD1, 0xF1, 0xF2, 0x10, 0x11, 0x30, 0x31, 0x32, 0x50, 0x51, 0x52, 0x70, 0x71, 0x72, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};	// 76回目	+02
 	
-	const uint32_t dwChIndex = dwSpace * 11UL + dwChannel;
+	const uint32_t dwChIndex = dwSpace * 30UL + dwChannel;
 	
 	// 資料
 	// BSAT-2c/3a TsID=4[BSch番号(2byte)][TP番号]
 	// BS- 1  周波数=11.727GHz 0832 TsID=4010 BS朝日
-	// BS- 1  周波数=11.727GHz 0832 TsID=4011 BS-i
-	// BS- 3  周波数=11.765GHz 0880 TsID=4030 WOWWOW
+	// BS- 1  周波数=11.727GHz 0832 TsID=4011 BS-TBS
+	// BS- 3  周波数=11.765GHz 0880 TsID=4030 WOWWOWプライム
 	// BS- 3  周波数=11.765GHz 0880 TsID=4031 BSジャパン
-	// BS- 5                                   アナログで使用(WOWWOW)
-	// BS- 7                                   アナログで使用(NHK BS-1)
+	// BS- 5  周波数=11.804GHz 08CC TsID=4450 WOWWOWライブ
+	// BS- 5  周波数=11.804GHz 08CC TsID=4451 WOWWOWシネマ
+	// BS- 7  周波数=11.842GHz 0918 TsID=4470 スター・チャンネル2/スター・チャンネル3
+	// BS- 7  周波数=11.842GHz 0918 TsID=4671 BSアニマックス
+	// BS- 7  周波数=11.842GHz 0918 TsID=4672 ディズニー・チャンネル
 	// BS- 9  周波数=11.880GHz 0964 TsID=4090 BS11
-	// BS- 9  周波数=11.880GHz 0964 TsID=4091 スターチャンネル
+	// BS- 9  周波数=11.880GHz 0964 TsID=4091 スター・チャンネル1
 	// BS- 9  周波数=11.880GHz 0964 TsID=4092 TwellV
-	// BS-11                                   アナログで使用(NHK BS-2)
+	// BS-11  周波数=11.919GHz 09B2 TsID=46b0 FOX bs238
+	// BS-11  周波数=11.919GHz 09B2 TsID=46b1 BSスカパー！
+	// BS-11  周波数=11.919GHz 09B2 TsID=46b2 放送大学テレビ/放送大学ラジオ
 	// BS-13  周波数=11.957GHz 0A00 TsID=40D0 BS日テレ
 	// BS-13  周波数=11.957GHz 0A00 TsID=40D1 BSフジ
-	// BS-15  周波数=11.996GHz 0A4C TsID=40F1 NHK BS1/BS2/ウェザーニューズ/エンジニアリングストリーム
-	// BS-15  周波数=11.996GHz 0A4C TsID=40F2 NHK BS-Hi
-	// BS-17                                   未使用(BSAT-4以降に搭載予定)
-	// BS-19                                   未使用(BSAT-4以降に搭載予定)
-	// BS-21                                   未使用(BSAT-4以降に搭載予定)
-	// BS-23                                   未使用(BSAT-4以降に搭載予定)
+	// BS-15  周波数=11.996GHz 0A4C TsID=40F1 NHK BS1
+	// BS-15  周波数=11.996GHz 0A4C TsID=40F2 NHK BSプレミアム/ウェザーニューズ/エンジニアリングストリーム
+	// BS-17  周波数=12.034GHz 0A98 TsID=4310 地上デジタル放送難視聴対策放送1(NHK/NHK E/FUJI)
+	// BS-17  周波数=12.034GHz 0A98 TsID=4311 地上デジタル放送難視聴対策放送2(NTV/TBS/ASAHI/TX)
+	// BS-19  周波数=12.072GHz 0AE4 TsID=4730 グリーンチャンネル
+	// BS-19  周波数=12.072GHz 0AE4 TsID=4731 J SPORTS 1
+	// BS-19  周波数=12.072GHz 0AE4 TsID=4732 J SPORTS 2
+	// BS-21  周波数=12.111GHz 0B32 TsID=4750 IMAGICA BS
+	// BS-21  周波数=12.111GHz 0B32 TsID=4751 J SPORTS 3
+	// BS-21  周波数=12.111GHz 0B32 TsID=4752 J SPORTS 4
+	// BS-23  周波数=12.149GHz 0B7E TsID=4770 BS釣りビジョン
+	// BS-23  周波数=12.149GHz 0B7E TsID=4771 日本映画専門チャンネル
+	// BS-23  周波数=12.149GHz 0B7E TsID=4772 D-Life
 	//
 	// NSAT-110 TsID=0000 固定
 	// CSND2  周波数=12.291GHz 0C9A TsID=0000 CS
@@ -259,7 +272,7 @@ static void SetChannel_Black(int fd, const uint32_t dwSpace, const uint32_t dwCh
 void
 FriioBlack::setChannel(BandType newBand, int newChannel)
 {
-	if (BAND_BS == newBand && 1 <= newChannel && newChannel <= 11) {
+	if (BAND_BS == newBand && 1 <= newChannel && newChannel <= 30) {
 		SetChannel_Black(tunerFd, 0U, newChannel - 1);
 	} else if (BAND_CS == newBand && 1 <= newChannel && newChannel <= 12) {
 		SetChannel_Black(tunerFd, 1U, newChannel - 1);
