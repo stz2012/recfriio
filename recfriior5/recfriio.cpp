@@ -37,6 +37,8 @@
 	#include "B25Decoder.hpp"
 #endif /* defined(B25) */
 
+#include "tssplitter_lite.hpp"
+
 /**
  * usageの表示
  */
@@ -46,7 +48,7 @@ void usage(char *argv[])
 #ifdef B25
 		<< " [--b25 [--round N] [--strip] [--EMM]]"
 #endif /* defined(B25) */
-		<< " [--lockfile lock]"
+		<< " [--lockfile lock] [--sid SID1,SID2]"
 		<< " [--lnb]"
 		<< " channel recsec destfile" << std::endl;
 	std::cerr << "Channels:" << std::endl;
@@ -103,6 +105,8 @@ struct Args {
 	bool forever;
 	int recsec;
 	char* destfile;
+	bool splitter;
+	char *sid_list;
 };
 
 /**
@@ -127,6 +131,8 @@ parseOption(int argc, char *argv[])
 		false,
 		0,
 		NULL,
+		false,
+		NULL,
 	};
 	
 	while (1) {
@@ -142,6 +148,7 @@ parseOption(int argc, char *argv[])
 			{ "EMM",      0, NULL, 'm' },
 			{ "emm",      0, NULL, 'm' },
 #endif /* defined(B25) */
+			{ "sid",      1, NULL, 'i'},
 			{ 0,     0, NULL, 0   }
 		};
 		
@@ -176,6 +183,10 @@ parseOption(int argc, char *argv[])
 				args.emm = true;
 				break;
 #endif /* defined(B25) */
+			case 'i':
+				args.splitter = true;
+				args.sid_list = optarg;
+				break;
 			default:
 				break;
 		}
@@ -291,7 +302,21 @@ main(int argc, char *argv[])
 		}
 	}
 #endif /* defined(B25) */
-	
+
+	/* initialize splitter */
+	splitbuf_t splitbuf;
+	splitbuf.size = 0;
+	splitter *splitter = NULL;
+	int split_select_finish = TSS_ERROR;
+	int code;
+	if(args.splitter) {
+		splitter = split_startup(args.sid_list);
+		if(splitter->sid_list == NULL) {
+			fprintf(stderr, "Cannot start TS splitter\n");
+			return 1;
+		}
+	}
+
 	// Tuner取得
 	boost::scoped_ptr<Recordable> tuner(createRecordable(args.type));
 	// ログ出力先設定
@@ -410,7 +435,47 @@ main(int argc, char *argv[])
 				}
 			}
 #endif /* defined(B25) */
-			
+
+			if (args.splitter) {
+				splitbuf.size = 0;
+				while (rlen) {
+					/* 分離対象PIDの抽出 */
+					if (split_select_finish != TSS_SUCCESS) {
+						split_select_finish = split_select(splitter, buf, rlen);
+						if (split_select_finish == TSS_NULL) {
+							/* mallocエラー発生 */
+							log << "split_select malloc failed" << std::endl;
+							args.splitter = false;
+							result = 1;
+							goto fin;
+						} else if (split_select_finish != TSS_SUCCESS) {
+							// 分離対象PIDが完全に抽出できるまで出力しない
+							// 1秒程度余裕を見るといいかも
+							time_t cur_time;
+							time(&cur_time);
+							if (cur_time - time_start > 4) {
+								args.splitter = false;
+								result = 1;
+								goto fin;
+							}
+							break;
+						}
+					}
+					/* 分離対象以外をふるい落とす */
+					code = split_ts(splitter, buf, rlen, &splitbuf);
+					if (code != TSS_SUCCESS) {
+						log << "split_ts failed" << std::endl;
+						break;
+					}
+					break;
+				}
+
+				rlen = splitbuf.size;
+				buf = splitbuf.buffer;
+			fin:
+				;
+			}
+
 			fwrite(buf, 1, rlen, dest);
 		} catch (usb_error& e) {
 			if (urb_error_cnt <= URB_ERROR_MAX) {
@@ -449,7 +514,11 @@ main(int argc, char *argv[])
 		}
 	}
 #endif /* defined(B25) */
-	
+
+	if (args.splitter) {
+		split_shutdown(splitter);
+	}
+
 	// 時間計測
 	timeval tv_end;
 	if (gettimeofday(&tv_end, NULL) < 0) {

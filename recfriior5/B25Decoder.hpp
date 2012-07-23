@@ -5,6 +5,7 @@
 #define _B25_DECODER_H_
 
 #include "error.hpp"
+#include <stdint.h>
 
 /**
  * B25 decode error

@@ -5,6 +5,7 @@
 #define _RECORDABLE_H_
 
 #include <inttypes.h>
+#include <stdint.h>
 #include <string>
 #include <vector>
 

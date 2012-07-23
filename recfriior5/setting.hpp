@@ -1,6 +1,8 @@
 // $Id$
 // 設定用
 
+#include <stdint.h>
+
 #ifndef _SETTING_HPP_
 #define _SETTING_HPP_
 

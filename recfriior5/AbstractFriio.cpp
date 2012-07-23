@@ -2,6 +2,7 @@
 // 白黒共通abstractクラス
 
 #include <sys/file.h>
+#include <sys/stat.h>
 #include <errno.h>
 
 #include <sstream>

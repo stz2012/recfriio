@@ -3,6 +3,7 @@
 
 #include <glib.h>
 #include <math.h>
+#include <string.h>
 #include "usbops.hpp"
 #include "FriioWhite.hpp"
 
