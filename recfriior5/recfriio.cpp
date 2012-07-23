@@ -387,6 +387,7 @@ main(int argc, char *argv[])
 #ifdef B25
 			// B25を経由させる。
 			if (args.b25) {
+				static int f_b25_sync = 0;
 				try {
 					const uint8_t *b25buf = buf;
 					b25dec.put(b25buf, rlen);
@@ -394,8 +395,13 @@ main(int argc, char *argv[])
 					if (0 == rlen) {
 						continue;
 					}
+					f_b25_sync = 1;
 					buf = b25buf;
 				} catch (b25_error& e) {
+					if( f_b25_sync == 0 ){
+						log << "Wait for B25 sync" << std::endl;
+						continue;
+					}
 					log << "B25 Error: " << e.what() << std::endl;
 					log << "Continue recording without B25." << std::endl;
 					// b25停止、戻り値エラー
