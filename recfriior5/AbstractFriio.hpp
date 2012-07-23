@@ -45,7 +45,7 @@ public:
 		}
 	};
 	
-	virtual const bool open();
+	virtual const bool open(bool lnb);
 	
 	virtual void close();
 	
@@ -165,7 +165,7 @@ protected:
 	 * 初期化処理(固定処理Aを除く)
 	 * @param fd 対象ファイルディスクリプタ
 	 */
-	virtual void UsbInitalize(int fd);
+	virtual void UsbInitalize(int fd, bool lnb);
 	
 	/**
 	 * USB終了処理
@@ -198,7 +198,7 @@ protected:
 	 * @param fd 対象ファイルディスクリプタ
 	 * @param color 色
 	 */
-	virtual void UsbProcLED(int fd, BonLedColor color) = 0;
+	virtual void UsbProcLED(int fd, BonLedColor color, bool lnb) = 0;
 	
 	/**
 	 * 初期化処理 : 固定処理B

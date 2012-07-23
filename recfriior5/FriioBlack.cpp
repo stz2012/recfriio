@@ -330,167 +330,41 @@ FriioBlack::getSignalLevel(void)
  * @param color 色
  */
 void
-FriioBlack::UsbProcLED(int fd, BonLedColor color)
+FriioBlack::UsbProcLED(int fd, BonLedColor color, bool lnb_powered)
 {
+	unsigned int i, j;
+	int lnb = lnb_powered ? FRIIO_PIC_LNB_1 : FRIIO_PIC_LNB_0;
+	unsigned char data[4];
+
 	switch(color)
 	{
-	case BON_LED_PURPLE:
-		{
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x0008, 0x0000);
-			UsbSendVendorRequest(fd, 0x000c, 0x0000);
-		}
+	case BON_LED_RED:
+		UsbProcLED_full(fd, 100, 0xFF000A, data);
 		break;
 	case BON_LED_GREEN:
-		{
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x000a, 0x0000);
-			UsbSendVendorRequest(fd, 0x000e, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x0002, 0x0000);
-			UsbSendVendorRequest(fd, 0x0006, 0x0000);
-			UsbSendVendorRequest(fd, 0x0000, 0x0000);
-			UsbSendVendorRequest(fd, 0x0004, 0x0000);
-		}
+		UsbProcLED_full(fd, 100, 0x00FF64, data);
 		break;
-	case BON_LED_RED:
-		{
-		}
+	case BON_LED_PURPLE:
+		UsbProcLED_full(fd, 150, 0xFF00FF, data);
 		break;
 	case BON_LED_WHITE:
-		{
-		}
+		UsbProcLED_full(fd, 100, 0xFFFFFF, data);
 		break;
 	}
+
+	UsbSendLED_bit(fd, FRIIO_PIC_LED_1 | lnb | FRIIO_PIC_STROBE_1);
+	UsbSendLED_bit(fd, FRIIO_PIC_LED_0 | lnb | FRIIO_PIC_STROBE_1);
+
+	for (i = 0; i < sizeof(data); i++) {
+		for (j = 0; j < 8; j++) {
+			int led_bit = (data[i] & (0x80U >> j)) ? FRIIO_PIC_LED_1 : FRIIO_PIC_LED_0;
+
+			UsbSendLED_bit(fd, led_bit | lnb | FRIIO_PIC_STROBE_1);
+		}
+	}
+
+	// STROBE: OFF
+	UsbSendLED_bit(fd, FRIIO_PIC_LED_0 | lnb | FRIIO_PIC_STROBE_0);
 }
 
 /**
@@ -524,4 +398,20 @@ FriioBlack::UsbProcFixInitB(int fd)
 	UsbSendVendorRequest(fd, 0x3010, 0x00c1);
 	UsbSendVendorRequest(fd, 0x301a, 0x00e4);
 	UsbSendVendorRequest(fd, 0x301f, 0x00ea);
+}
+
+void 
+FriioBlack::UsbSendLED_bit(int fd, unsigned char data)
+{
+	UsbSendVendorRequest(fd, data | FRIIO_PIC_CLK_0, 0x0000);
+	UsbSendVendorRequest(fd, data | FRIIO_PIC_CLK_1, 0x0000);
+}
+
+void
+FriioBlack::UsbProcLED_full(int fd, int rgb_saturation, uint32_t color, unsigned char *data)
+{
+	data[0] = rgb_saturation;
+	data[1] = (color >> 16) & 0xff;
+	data[2] = (color >> 8) & 0xff;
+	data[3] = (color >> 0) & 0xff;
 }

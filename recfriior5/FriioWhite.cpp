@@ -119,11 +119,11 @@ FriioWhite::UsbInitalize(int fd)
 	// ストリーム制御データ
 	UsbProcStreamInit(fd);
 	// ＬＥＤ制御(紫)
-	UsbProcLED(fd, BON_LED_PURPLE);
+	UsbProcLED(fd, BON_LED_PURPLE, false);
 	// 固定処理Ｂ
 	UsbProcFixInitB(fd);
 	// コントロールＬＥＤ制御(緑)
-	UsbProcLED(fd, BON_LED_GREEN);
+	UsbProcLED(fd, BON_LED_GREEN, false);
 	// 初期化＼(＾o＾)／お疲れ様
 }
 
@@ -157,7 +157,7 @@ FriioWhite::UsbProcEnd(int fd)
  * @param color 色
  */
 void
-FriioWhite::UsbProcLED(int fd, BonLedColor color)
+FriioWhite::UsbProcLED(int fd, BonLedColor color, bool lnb_powered)
 {
 	switch(color)
 	{

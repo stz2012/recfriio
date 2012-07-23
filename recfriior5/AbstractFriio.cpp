@@ -253,7 +253,7 @@ detectLock(std::string& lockFile) throw (io_error)
  * @exception usb_error チューナ初期化時にエラーが発生した場合。
  */
 const bool
-AbstractFriio::open()
+AbstractFriio::open(bool lnb)
 {
 	if (initialized) {
 		return true;
@@ -337,7 +337,7 @@ AbstractFriio::open()
 	tunerFd = result_fd;
 	
 	// 初期化する。
-	UsbInitalize(tunerFd);
+	UsbInitalize(tunerFd, lnb);
 	
 	autoCloseUsbInit.cancel();
 	initialized = true;
@@ -415,18 +415,18 @@ AbstractFriio::UsbProcFixInitA(int fd)
  * @param fd 対象ファイルディスクリプタ
  */
 void
-AbstractFriio::UsbInitalize(int fd)
+AbstractFriio::UsbInitalize(int fd, bool lnb)
 {
 	// 処理開始
 	UsbProcBegin(fd);
 	// ストリーム制御データ
 	UsbProcStreamInit(fd);
 	// ＬＥＤ制御(紫)
-	UsbProcLED(fd, BON_LED_PURPLE);
+	UsbProcLED(fd, BON_LED_PURPLE, lnb);
 	// 固定処理Ｂ
 	UsbProcFixInitB(fd);
 	// コントロールＬＥＤ制御(緑)
-	UsbProcLED(fd, BON_LED_GREEN);
+	UsbProcLED(fd, BON_LED_GREEN, lnb);
 	// 初期化＼(＾o＾)／お疲れ様
 }
 
@@ -437,7 +437,7 @@ AbstractFriio::UsbInitalize(int fd)
 void
 AbstractFriio::UsbTerminate(int fd)
 {
-	UsbProcLED(fd, BON_LED_PURPLE);
+	UsbProcLED(fd, BON_LED_PURPLE, false);
 	UsbProcEnd(fd);
 }
 

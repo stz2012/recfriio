@@ -50,7 +50,7 @@ public:
 	 * チューナを開く
 	 * @param チューナが開けた場合true
 	 */
-	virtual const bool open() = 0;
+	virtual const bool open(bool lnb) = 0;
 	
 	/**
 	 * チューナを閉じる。

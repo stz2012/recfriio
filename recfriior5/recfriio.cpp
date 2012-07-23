@@ -47,6 +47,7 @@ void usage(char *argv[])
 		<< " [--b25 [--round N] [--strip] [--EMM]]"
 #endif /* defined(B25) */
 		<< " [--lockfile lock]"
+		<< " [--lnb]"
 		<< " channel recsec destfile" << std::endl;
 	std::cerr << "Channels:" << std::endl;
 	std::cerr << "  13 - 62 : UHF13 - UHF62" << std::endl;
@@ -76,6 +77,7 @@ struct Args {
 	bool emm;
 #endif /* defined(B25) */
 	char* lockfile;
+	bool lnb;
 	bool stdout;
 	TunerType type;
 	BandType band;
@@ -100,6 +102,7 @@ parseOption(int argc, char *argv[])
 #endif /* defined(B25) */
 		NULL,
 		false,
+		false,
 		TUNER_FRIIO_WHITE,
 		BAND_UHF,
 		0,
@@ -112,6 +115,7 @@ parseOption(int argc, char *argv[])
 		int option_index = 0;
 		static option long_options[] = {
 			{ "lockfile", 1, NULL, 'l' }, 
+			{ "lnb", 0, NULL, 'n' }, 
 #ifdef B25
 			{ "b25",      0, NULL, 'b' },
 			{ "B25",      0, NULL, 'b' },
@@ -136,6 +140,9 @@ parseOption(int argc, char *argv[])
 		switch (r) {
 			case 'l':
 				args.lockfile = optarg;
+				break;
+			case 'n':
+				args.lnb = true;
 				break;
 #ifdef B25
 			case 'b':
@@ -281,7 +288,7 @@ main(int argc, char *argv[])
 	while (0 < retryCount) {
 		try {
 			// チューナopen
-			bool r = tuner->open();
+			bool r = tuner->open(args.lnb);
 			if (!r) {
 				std::cerr << "can't open tuner." << std::endl;
 				exit(1);

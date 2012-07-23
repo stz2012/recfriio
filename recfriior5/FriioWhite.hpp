@@ -45,7 +45,7 @@ protected:
 	 * @param fd 対象ファイルディスクリプタ
 	 * @param color 色
 	 */
-	virtual void UsbProcLED(int fd, BonLedColor color);
+	virtual void UsbProcLED(int fd, BonLedColor colorr, bool lnb_powered);
 	
 	/**
 	 * 初期化処理 : 固定処理B
