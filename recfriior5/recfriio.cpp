@@ -36,6 +36,9 @@
 #ifdef B25
 	#include "B25Decoder.hpp"
 #endif /* defined(B25) */
+#ifdef UDP
+	#include "Udp.hpp"
+#endif /* defined(UDP) */
 
 #include "tssplitter_lite.hpp"
 
@@ -48,11 +51,21 @@ void usage(char *argv[])
 #ifdef B25
 		<< " [--b25 [--round N] [--strip] [--EMM]]"
 #endif /* defined(B25) */
+#ifdef HDUS
+		<< " [--hdus]"
+		<< " [--hdp]"
+#endif /* defined(HDUS) */
+#ifdef UDP
+		<< " [--udp ip [--port N]]"
+#endif /* defined(UDP) */
 		<< " [--lockfile lock] [--sid SID1,SID2]"
 		<< " [--lnb]"
 		<< " channel recsec destfile" << std::endl;
 	std::cerr << "Channels:" << std::endl;
 	std::cerr << "  13 - 62 : UHF13 - UHF62" << std::endl;
+#ifdef HDUS
+	std::cerr << "  K13 - K63 : CATV13 - CATV63" << std::endl;
+#endif /* defined(HDUS) */
 	std::cerr << "  B1 : BS朝日               C1 : 110CS #1" << std::endl;
 	std::cerr << "  B2 : BS-TBS               C2 : 110CS #2" << std::endl;
 	std::cerr << "  B3 : BSジャパン           C3 : 110CS #3" << std::endl;
@@ -105,6 +118,10 @@ struct Args {
 	bool forever;
 	int recsec;
 	char* destfile;
+#ifdef UDP
+	std::string ip;
+	int port;
+#endif /* defined(UDP) */
 	bool splitter;
 	char *sid_list;
 };
@@ -131,10 +148,19 @@ parseOption(int argc, char *argv[])
 		false,
 		0,
 		NULL,
+#ifdef UDP
+		"",
+		UDP_PORT,
+#endif /* defined(UDP) */
 		false,
 		NULL,
 	};
-	
+
+#ifdef HDUS
+	bool use_hdus = false;
+	bool use_hdp = false;
+#endif /* defined(HDUS) */
+
 	while (1) {
 		int option_index = 0;
 		static option long_options[] = {
@@ -148,6 +174,14 @@ parseOption(int argc, char *argv[])
 			{ "EMM",      0, NULL, 'm' },
 			{ "emm",      0, NULL, 'm' },
 #endif /* defined(B25) */
+#ifdef HDUS
+			{ "hdus",      0, NULL, 'h' },
+			{ "hdp",       0, NULL, 'd' },
+#endif /* defined(HDUS) */
+#ifdef UDP
+			{ "udp",       1, NULL, 'u' },
+			{ "port",      1, NULL, 'p' },
+#endif /* defined(UDP) */
 			{ "sid",      1, NULL, 'i'},
 			{ 0,     0, NULL, 0   }
 		};
@@ -183,6 +217,22 @@ parseOption(int argc, char *argv[])
 				args.emm = true;
 				break;
 #endif /* defined(B25) */
+#ifdef HDUS
+			case 'h':
+				use_hdus = true;
+				break;
+			case 'd':
+				use_hdp = true;
+				break;
+#endif /* defined(HDUS) */
+#ifdef UDP
+			case 'u':
+				args.ip = optarg;
+				break;
+			case 'p':
+				args.port = atoi(optarg);
+				break;
+#endif /* defined(UDP) */
 			case 'i':
 				args.splitter = true;
 				args.sid_list = optarg;
@@ -210,8 +260,28 @@ parseOption(int argc, char *argv[])
 			args.band = BAND_CS;
 			chstr++;
 			break;
+#ifdef HDUS
+		case 'K':
+		case 'k':
+			if( use_hdus )
+				args.type = TUNER_HDUS;
+			else
+				args.type = TUNER_HDP;
+			args.band = BAND_CATV;
+			chstr++;
+			break;
+#endif 
 		default:
+#ifdef HDUS
+			if( use_hdus )
+				args.type = TUNER_HDUS;
+			else if( use_hdp )
+				args.type = TUNER_HDP;
+			else
+				args.type = TUNER_FRIIO_WHITE;
+#else
 			args.type = TUNER_FRIIO_WHITE;
+#endif /* defined(HDUS) */
 			args.band = BAND_UHF;
 	}
 	args.channel   = atoi(chstr);
@@ -248,6 +318,14 @@ main(int argc, char *argv[])
 	
 	// 引数確認
 	switch (args.band) {
+#ifdef HDUS
+		case BAND_CATV:
+			if (args.channel < 13 || 63 < args.channel) {
+				std::cerr << "channel must be (13 <= channel <= 63)." << std::endl;
+				exit(1);
+			}
+			break;
+#endif /* defined(HDUS) */
 		case BAND_UHF:
 			if (args.channel < 13 || 62 < args.channel) {
 				std::cerr << "channel must be (13 <= channel <= 62)." << std::endl;
@@ -303,6 +381,21 @@ main(int argc, char *argv[])
 	}
 #endif /* defined(B25) */
 
+#ifdef UDP
+	// UDP初期化
+	Udp udp;
+	if( ! args.ip.empty() ){
+		try{
+			udp.setLog(&log);
+			udp.init( args.ip, args.port );
+		}
+		catch( const char* e ){
+			log << e << std::endl;
+			log << "disable UDP." << std::endl;
+		}
+	}
+#endif /* defined(UDP) */
+
 	/* initialize splitter */
 	splitbuf_t splitbuf;
 	splitbuf.size = 0;
@@ -319,6 +412,10 @@ main(int argc, char *argv[])
 
 	// Tuner取得
 	boost::scoped_ptr<Recordable> tuner(createRecordable(args.type));
+#ifdef HDUS
+	if( args.type == TUNER_HDUS ) log << "Tuner type is HDUS." << std::endl;
+	else if( args.type == TUNER_HDP ) log << "Tuner type is HDP." << std::endl;
+#endif /* defined(HDUS) */
 	// ログ出力先設定
 	tuner->setLog(&log);
 	// ロックファイル設定
@@ -477,6 +574,12 @@ main(int argc, char *argv[])
 			}
 
 			fwrite(buf, 1, rlen, dest);
+
+#ifdef UDP
+			// UDP 配信
+			udp.send(buf, rlen);
+#endif /* defined(UDP) */
+
 		} catch (usb_error& e) {
 			if (urb_error_cnt <= URB_ERROR_MAX) {
 				log << e.what() << std::endl;
@@ -531,6 +634,11 @@ main(int argc, char *argv[])
 		fclose(dest);
 	}
 	log << "done." << std::endl;
+	
+#ifdef UDP
+	// UDP クローズ
+	udp.shutdown();
+#endif /* defined(UDP) */
 	
 	// 録画時間出力
 	timeval rec_time;

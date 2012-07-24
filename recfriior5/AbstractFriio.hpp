@@ -132,7 +132,11 @@ protected:
 	 * @param devfile デバイスファイル
 	 * @return Friioである場合true;
 	 */
+#ifdef HDUS
+	virtual bool is_friio(const std::string &devfile);
+#else
 	bool is_friio(const std::string &devfile);
+#endif
 	
 	/**
 	 * Friioのデバイスファイルを検索する。

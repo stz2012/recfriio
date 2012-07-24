@@ -15,6 +15,10 @@
 typedef enum {
 	TUNER_FRIIO_WHITE,
 	TUNER_FRIIO_BLACK,
+#ifdef HDUS
+	TUNER_HDUS,
+	TUNER_HDP,
+#endif
 	TUNER_TYPES_LEN,
 } TunerType;
 

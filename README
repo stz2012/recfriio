@@ -1,24 +1,42 @@
-recfriio r5
+recfriio r5 + α
 Linux用Friio録画プログラム(黒凡/白凡共通)です。
 
 make でビルドした後、
 ./recfriio 録画するチャンネル 録画秒数 出力先ファイル名
 で録画されます。
 チャンネル番号は以下の通りです。引数なしで実行すると同じリストが出力されます。
- ※注意: 新BSの対応は行なわれていません。
   13 - 62 : UHF13 - UHF62
-  B1 : BS-Asahi      C1 : 110CS #1
-  B2 : BS-i          C2 : 110CS #2
-  B3 : WOWOW         C3 : 110CS #3
-  B4 : BS-Japan      C4 : 110CS #4
-  B5 : BS11          C5 : 110CS #5
-  B6 : Star Channel  C6 : 110CS #6
-  B7 : TwellV        C7 : 110CS #7
-  B8 : BS-NTV        C8 : 110CS #8
-  B9 : BS-Fuji       C9 : 110CS #9
-  B10: NHK BS1/BS2   C10: 110CS #a
-  B11: NHK hi        C11: 110CS #b
-                     C12: 110CS #c
+  K13 - K63 : CATV13 - CATV63
+  B1 : BS朝日               C1 : 110CS #1
+  B2 : BS-TBS               C2 : 110CS #2
+  B3 : BSジャパン           C3 : 110CS #3
+  B4 : WOWOWプライム        C4 : 110CS #4
+  B5 : WOWOWライブ          C5 : 110CS #5
+  B6 : WOWOWシネマ          C6 : 110CS #6
+  B7 : スターチャンネル2/3  C7 : 110CS #7
+  B8 : BSアニマックス       C8 : 110CS #8
+  B9 : ディズニーチャンネル C9 : 110CS #9
+  B10: BS11                 C10: 110CS #a
+  B11: スターチャンネル1    C11: 110CS #b
+  B12: TwellV               C12: 110CS #c
+  B13: FOX bs238
+  B14: BSスカパー!
+  B15: 放送大学
+  B16: BS日テレ
+  B17: BSフジ
+  B18: NHK BS1
+  B19: NHK BSプレミアム
+  B20: 地デジ難視聴1(NHK/NHK-E/CX)
+  B21: 地デジ難視聴2(NTV/TBS/EX/TX)
+  B22: グリーンチャンネル
+  B23: J SPORTS 1
+  B24: J SPORTS 2
+  B25: IMAGICA BS
+  B26: J SPORTS 3
+  B27: J SPORTS 4
+  B28: BS釣りビジョン
+  B29: 日本映画専門チャンネル
+  B30: D-Life
 
 録画秒数に'-'を指定すると^C等でinterruptされるまで録画します。
 出力先ファイル名に'-'を指定すると標準出力にTSを出力します。その場合ログは標準エラー出力に出力されます。
@@ -30,6 +48,16 @@ B25      = -DB25
 オプション --b25 を指定すると、録画時にB25デコードを行います。
 --round N --strip --EMM 等のオプションがあり、ARIB STD-B25 仕様確認テストプログラムと同じように動作します。
 --b25オプションを使用しない場合、録画ファイルはMulti2で暗号化された状態で出力されるのでb25等でデコードして下さい。
+
+Makefile中の
+HDUS     = -DHDUS
+をコメントアウトせずにビルドした場合
+MonsterTV HDUS/HDP対応版としてコンパイルされます。
+
+Makefile中の
+UDP      = -DUDP
+をコメントアウトせずにビルドした場合
+UDP送信対応版としてコンパイルされます。
 
 recfriio r3 からFriioの初期化時に黒凡/白凡判定を行なうようになった為、flockでの排他の為にファイルを使用します。
 デフォルトでは/var/lock/friiodetectが使用されますが、--lockfile ファイル名 で変更が可能です。
@@ -71,9 +99,6 @@ SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", \
        終了時ににタイムアウトした場合無視して正常終了します。LEDの色が元に戻りません。
   boost::threadのライブラリ名が-mt付きの場合と-mt無しの場合がある。
     => コンパイルエラーが起こった場合、Makefile内にある-lboost_thread-mtの-mtを外して下さい。
-  linux/usb/ch9.hがlinux/usb_ch9.hの場合がある。
-    => コンパイルエラーが起こった場合、
-       usbops.hpp:7行目 #include <linux/usb/ch9.h> を #include <linux/usb_ch9.h> に変更して下さい。
 
 変更点:
 r5:

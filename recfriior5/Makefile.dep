@@ -16,3 +16,8 @@ B25Decoder.o: B25Decoder.cpp ../arib25v025/arib25/src/arib_std_b25.h \
  ../arib25v025/arib25/src/portable.h \
  ../arib25v025/arib25/src/b_cas_card.h \
  ../arib25v025/arib25/src/b_cas_card.h B25Decoder.hpp error.hpp
+Hdus.o: Hdus.cpp usbops.hpp error.hpp Hdus.hpp Recordable.hpp \
+  AbstractFriio.hpp setting.hpp RingBuf.hpp IoThread.hpp decrypt.c
+Hdp.o: Hdp.cpp usbops.hpp error.hpp Hdp.hpp Recordable.hpp \
+  AbstractFriio.hpp setting.hpp RingBuf.hpp IoThread.hpp decrypt.c
+Udp.o: Udp.cpp Udp.hpp
