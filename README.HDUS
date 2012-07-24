@@ -1,0 +1,44 @@
+recfriioのHDUS対応パッチへの改良パッチ
+
+対象:
+recfriio r4(up0777.zip)に旧基板HDUS対応パッチその2(up0127.zip)を適用したもの
+
+動作確認環境:
+・CentOS 5.2 + HDUS 旧基板
+・CentOS 4.7 + HDUS 旧基板
+
+内容:
+・HDUS旧基板と新基板(HDUSF)の両方に対応
+  nnc4hdus v0.2.0ベースのup0223.zipとup0228.zipと既存の旧基板用のコード
+  をマージし、さらに適度にusleepするように改良した
+  ただし、旧基板のみ動作確認しているので、新基板で動作するかは未確認
+
+・HDPやHDP2やLDT-FS100Uに対応したつもりのコードを追加 ( --hdp )
+  up0174.zipのhdp実験ソースをそのまま移植しただけなので動作未確認
+  HDP2は片方のチューナーのみ対応
+
+・SKNET_HDTV_BDA.sysなしで動作するように変更
+  旧基板で使用するxor tableをSKNET_HDTV_BDA.sysから読み込まず、
+  nnc4hdus v0.2.0由来のxor tableを使用するように変更
+
+・受信レベルを実装
+  HDUS解析スレ Part2の470-471, 476より実装
+  (hdpで動作するか不明なのでとりあえず無効化)
+
+・CATVバンドへの対応
+  HDUSはC13-C63までのCATVバンドにも対応しているようなので、
+  チャンネル番号K13-K63として指定できるようにした
+  ただ、手元のCATVはこの帯域を使用していないので動作未確認
+
+・カーネルのバージョンの違いに対応
+  linux/usb/ch9.hとlinux/usb_ch9.hとの違いやもっと古い環境に対応した
+  -lboost_thread-mtと-lboost_threadは従来通り手動で修正する必要あり
+
+・HDUSリモコンへの対応
+  実用的ではないがHDUSのリモコンをXで使えるサンプルコードを追加
+  remote以下を参照
+  recfriio動作中にhdusremoteを起動するとrecfriioが死ぬので注意
+
+ライセンス:
+それぞれのコードは元のコードのライセンスに従います。
+自分のコードはAS-ISで提供します。
