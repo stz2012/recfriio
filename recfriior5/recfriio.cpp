@@ -49,7 +49,7 @@ void usage(char *argv[])
 {
 	std::cerr << "usage: " << argv[0]
 #ifdef B25
-		<< " [--b25 [--round N] [--strip] [--EMM]]"
+		<< " [--b25 [--round N] [--strip] [--EMM] [--sync]]"
 #endif /* defined(B25) */
 #ifdef HDUS
 		<< " [--hdus]"
@@ -108,6 +108,7 @@ struct Args {
 	int round;
 	bool strip;
 	bool emm;
+	bool sync;
 #endif /* defined(B25) */
 	char* lockfile;
 	bool lnb;
@@ -136,6 +137,7 @@ parseOption(int argc, char *argv[])
 #ifdef B25
 		false,
 		4,
+		false,
 		false,
 		false,
 #endif /* defined(B25) */
@@ -173,6 +175,7 @@ parseOption(int argc, char *argv[])
 			{ "strip",    0, NULL, 's' },
 			{ "EMM",      0, NULL, 'm' },
 			{ "emm",      0, NULL, 'm' },
+			{ "sync",     0, NULL, 'S' },
 #endif /* defined(B25) */
 #ifdef HDUS
 			{ "hdus",      0, NULL, 'h' },
@@ -188,7 +191,7 @@ parseOption(int argc, char *argv[])
 		
 		int r = getopt_long(argc, argv,
 #ifdef B25
-		                    "bsmr:"
+		                    "bsmr:S"
 #endif /* defined(B25) */
 		                    "l:",
 		                    long_options, &option_index);
@@ -215,6 +218,9 @@ parseOption(int argc, char *argv[])
 				break;
 			case 'm':
 				args.emm = true;
+				break;
+			case 'S':
+				args.sync = true;
 				break;
 #endif /* defined(B25) */
 #ifdef HDUS
@@ -520,7 +526,7 @@ main(int argc, char *argv[])
 					f_b25_sync = 1;
 					buf = b25buf;
 				} catch (b25_error& e) {
-					if( f_b25_sync == 0 ){
+					if( f_b25_sync == 0 && args.sync ){
 						log << "Wait for B25 sync" << std::endl;
 						continue;
 					}
