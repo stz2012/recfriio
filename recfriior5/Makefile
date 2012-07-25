@@ -24,6 +24,7 @@ ifdef UDP
 endif
 
 DIST     = .
+CC       = gcc
 CXX      = g++
 CXXFLAGS = -O2 -g -Wall -pthread -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 $(B25) $(HDUS) $(UDP) `pkg-config --cflags glib-2.0`
 LDFLAGS  = 
@@ -31,11 +32,12 @@ LDFLAGS  =
 OBJS   = recfriio.o usbops.o error.o IoThread.o Recordable.o AbstractFriio.o FriioWhite.o FriioBlack.o FriioWhiteWrapper.o FriioExpress.o tssplitter_lite.o $(B25_OBJS) $(HDUS_OBJS) $(UDP_OBJS)
 LIBS   = -lpthread -lboost_thread-mt -lboost_filesystem `pkg-config --libs glib-2.0`
 TARGET = $(DIST)/recfriio
+DEPEND = Makefile.dep
 
 all: $(TARGET)
 
 clean: $(B25_CLEAN)
-	rm -f $(OBJS) $(TARGET)
+	rm -f $(OBJS) $(TARGET) $(DEPEND)
 
 ifdef B25
 clean_b25:
@@ -45,8 +47,8 @@ endif
 $(TARGET):	$(OBJS) $(B25_OBJS_EXT)
 	$(CXX) $(LDFLAGS) -o $(TARGET) $(OBJS) $(B25_OBJS_EXT) $(LIBS) $(B25_LIBS)
 
-depend:
-	$(CXX) -MM $(OBJS:.o=.cpp) > Makefile.dep
+$(DEPEND):
+	$(CC) -MM $(OBJS:.o=.cpp) > Makefile.dep
 
 # B25_OBJS_EXT
 $(B25_PATH)/arib_std_b25.o:
@@ -58,4 +60,4 @@ $(B25_PATH)/multi2.o:
 $(B25_PATH)/ts_section_parser.o:
 	cd $(B25_PATH); make all
 
--include Makefile.dep
+-include $(DEPEND)
