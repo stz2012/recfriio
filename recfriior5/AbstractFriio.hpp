@@ -80,6 +80,62 @@ public:
 		}
 	};
 	
+	/**
+	 * 初期化処理(固定処理Aを除く)
+	 * @param fd 対象ファイルディスクリプタ
+	 */
+	virtual void UsbInitalize(int fd, bool lnb);
+	
+	/**
+	 * USB終了処理
+	 * @param fd 対象ファイルディスクリプタ
+	 */
+	virtual void UsbTerminate(int fd);
+	
+	/**
+	 * 初期化処理 : 処理開始
+	 * 便宜上Beginにしているが、本来どんなことをしているかは不明
+	 * @param fd 対象ファイルディスクリプタ
+	 */
+	virtual void UsbProcBegin(int fd) = 0;
+	
+	/**
+	 * 処理終了
+	 * 便宜上Endにしている。恐らくバッファクリア
+	 * @param fd 対象ファイルディスクリプタ
+	 */
+	virtual void UsbProcEnd(int fd) = 0;
+	
+	/**
+	 * 初期化処理 : ストリーム制御データ
+	 * @param fd 対象ファイルディスクリプタ
+	 */
+	virtual void UsbProcStreamInit(int fd);
+	
+	/**
+	 * ＬＥＤ制御
+	 * @param fd 対象ファイルディスクリプタ
+	 * @param color 色
+	 */
+	virtual void UsbProcLED(int fd, BonLedColor color, bool lnb) = 0;
+	
+	/**
+	 * 初期化処理 : 固定処理B
+	 * @param fd 対象ファイルディスクリプタ
+	 */
+	virtual void UsbProcFixInitB(int fd) = 0;
+	
+	/**
+	 * コピー処理
+	 */
+	void CopyWrapper(bool initialized, std::ostream *log, std::string lockfile, int tunerFd, int endpoint) {
+		this->initialized = initialized;
+		this->log = log;
+		this->lockfile = lockfile;
+		this->tunerFd = tunerFd;
+		this->endpoint = endpoint;
+	}
+
 protected:
 	/** 初期化済? */
 	bool initialized;
@@ -164,51 +220,6 @@ protected:
 	 * @return TunerType チューナの種別
 	 */
 	virtual TunerType UsbProcFixInitA(int fd);
-	
-	/**
-	 * 初期化処理(固定処理Aを除く)
-	 * @param fd 対象ファイルディスクリプタ
-	 */
-	virtual void UsbInitalize(int fd, bool lnb);
-	
-	/**
-	 * USB終了処理
-	 * @param fd 対象ファイルディスクリプタ
-	 */
-	virtual void UsbTerminate(int fd);
-	
-	/**
-	 * 初期化処理 : 処理開始
-	 * 便宜上Beginにしているが、本来どんなことをしているかは不明
-	 * @param fd 対象ファイルディスクリプタ
-	 */
-	virtual void UsbProcBegin(int fd) = 0;
-	
-	/**
-	 * 処理終了
-	 * 便宜上Endにしている。恐らくバッファクリア
-	 * @param fd 対象ファイルディスクリプタ
-	 */
-	virtual void UsbProcEnd(int fd) = 0;
-	
-	/**
-	 * 初期化処理 : ストリーム制御データ
-	 * @param fd 対象ファイルディスクリプタ
-	 */
-	virtual void UsbProcStreamInit(int fd);
-	
-	/**
-	 * ＬＥＤ制御
-	 * @param fd 対象ファイルディスクリプタ
-	 * @param color 色
-	 */
-	virtual void UsbProcLED(int fd, BonLedColor color, bool lnb) = 0;
-	
-	/**
-	 * 初期化処理 : 固定処理B
-	 * @param fd 対象ファイルディスクリプタ
-	 */
-	virtual void UsbProcFixInitB(int fd) = 0;
 };
 
 #endif /* !defined(_ABSTRACT_FRIIO_H_) */

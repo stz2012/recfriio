@@ -15,6 +15,7 @@
 
 #include "usbops.hpp"
 #include "AutoCloser.hpp"
+#include "setting.hpp"
 
 /**
  * usb_device_descriptorを取得する。
@@ -213,4 +214,62 @@ int
 usb_discardurb(int fd, usbdevfs_urb* urbp)
 {
 	return ioctl(fd, USBDEVFS_DISCARDURB, urbp);
+}
+
+/**
+ * 配列で送信する。
+ * @param fd 対象ファイルディスクリプタ
+ * @param data    送信データの配列
+ * @param length  送信データの配列数
+ * @param rcvbuf  受信する場合のバッファ
+ * @param rcv_len 受信バッファのサイズ
+ * @exception usb_error USBのエラー時
+ */
+int
+usb_ctrl_sends(int fd, uint16_t data[], size_t length,  uint8_t *rcvbuf, size_t recv_len) throw (usb_error)
+{
+  usbdevfs_ctrltransfer ctrl;
+  uint i, n;
+
+#define BUFMAX 20
+  uint8_t sbuf[BUFMAX];
+
+  for(i = 0; i < length; i++) {
+    ctrl.bRequestType = data[i];
+    ctrl.bRequest     = data[++i];
+    ctrl.wValue       = data[++i];
+    ctrl.wIndex       = data[++i];
+    ctrl.wLength      = data[++i];
+    ctrl.timeout      = REQUEST_TIMEOUT;
+    ctrl.data = NULL;
+
+    if(ctrl.bRequestType != 0x40 &&
+       ctrl.bRequestType != 0xc0   ) {
+      std::ostringstream stream;
+      stream << "usb ctrl sends loop error ";
+      throw usb_error(stream.str());
+    }
+    
+    if(ctrl.wLength > 0) {
+      memset(sbuf, 0, sizeof(sbuf));
+      if(ctrl.bRequestType != 0xc0) {
+	for(n = 0; n < ctrl.wLength; n++) {
+	  sbuf[n] = data[++i];
+	}
+      }
+      ctrl.data = sbuf;
+      
+      usb_ctrl(fd, &ctrl);
+
+      if(ctrl.bRequestType == 0xc0 && recv_len > 0) {
+	for(n = 0; n < recv_len && n < BUFMAX; n++) {
+	  rcvbuf[n] = sbuf[n];
+	}
+      }
+    } else {
+      usb_ctrl(fd, &ctrl);
+    }
+  }
+
+  return 0;
 }

@@ -2,6 +2,7 @@
 // 黒凡
 
 #include <glib.h>
+#include <inttypes.h>
 #include <string.h>
 #include "usbops.hpp"
 #include "FriioBlack.hpp"

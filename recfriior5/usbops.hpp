@@ -14,6 +14,7 @@
 #include <linux/usb/ch9.h>
 #endif
 #include <linux/usbdevice_fs.h>
+#include <stdint.h>
 #include "error.hpp"
 
 /**
@@ -99,5 +100,16 @@ int usb_reapurb_ndelay(int fd, usbdevfs_urb** urbpp);
  * @return int 結果(ioctl)
  */
 int usb_discardurb(int fd, usbdevfs_urb* urbp);
+
+/**
+ * 配列で送信する。
+ * @param fd 対象ファイルディスクリプタ
+ * @param data    送信データの配列
+ * @param length  送信データの配列数
+ * @param rcvbuf  受信する場合のバッファ
+ * @param rcv_len 受信バッファのサイズ
+ * @exception usb_error USBのエラー時
+ */
+int usb_ctrl_sends(int fd, uint16_t data[], size_t length,  uint8_t *rcvbuf, size_t recv_len) throw (usb_error);
 
 #endif /* !defined(_USB_OPS_HPP_) */

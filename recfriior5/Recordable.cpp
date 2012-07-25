@@ -1,7 +1,9 @@
 // $Id: Recordable.cpp 5663 2008-09-15 17:53:59Z clworld $
 // 
 
-#include "FriioWhite.hpp"
+#include <inttypes.h>
+#include <stdint.h>
+#include "FriioWhiteWrapper.hpp"
 #include "FriioBlack.hpp"
 #ifdef HDUS
 #include "Hdus.hpp"
@@ -21,7 +23,7 @@ extern "C" Recordable*
 createRecordable(TunerType type) {
 	switch(type) {
 		case TUNER_FRIIO_WHITE:
-			return new FriioWhite();
+			return new FriioWhiteWrapper();
 			break;
 		case TUNER_FRIIO_BLACK:
 			return new FriioBlack();

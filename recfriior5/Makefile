@@ -28,7 +28,7 @@ CXX      = g++
 CXXFLAGS = -O2 -g -Wall -pthread -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 $(B25) $(HDUS) $(UDP) `pkg-config --cflags glib-2.0`
 LDFLAGS  = 
 
-OBJS   = recfriio.o usbops.o error.o IoThread.o Recordable.o AbstractFriio.o FriioWhite.o FriioBlack.o tssplitter_lite.o $(B25_OBJS) $(HDUS_OBJS) $(UDP_OBJS)
+OBJS   = recfriio.o usbops.o error.o IoThread.o Recordable.o AbstractFriio.o FriioWhite.o FriioBlack.o FriioWhiteWrapper.o FriioExpress.o tssplitter_lite.o $(B25_OBJS) $(HDUS_OBJS) $(UDP_OBJS)
 LIBS   = -lpthread -lboost_thread-mt -lboost_filesystem `pkg-config --libs glib-2.0`
 TARGET = $(DIST)/recfriio
 

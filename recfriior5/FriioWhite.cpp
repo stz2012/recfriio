@@ -2,6 +2,7 @@
 // 白凡
 
 #include <glib.h>
+#include <inttypes.h>
 #include <math.h>
 #include <string.h>
 #include "usbops.hpp"
