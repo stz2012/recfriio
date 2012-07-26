@@ -3,8 +3,8 @@
 
 #include <sstream>
 
-#include "./arib25/arib_std_b25.h"
-#include "./arib25/b_cas_card.h"
+#include "../arib25/arib_std_b25.h"
+#include "../arib25/b_cas_card.h"
 
 #define _REAL_B25_
 #include "B25Decoder.hpp"
