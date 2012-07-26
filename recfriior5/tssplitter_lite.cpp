@@ -22,8 +22,8 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "../arib25v025/arib25/src/arib_std_b25.h"
-#include "../arib25v025/arib25/src/b_cas_card.h"
+#include "./arib25/arib_std_b25.h"
+#include "./arib25/b_cas_card.h"
 
 #include <fcntl.h>
 #include <sys/stat.h>

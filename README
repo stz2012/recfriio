@@ -1,79 +1,79 @@
-recfriio r5 + ��
-Linux�pFriio�^��v���O����(���}/���}����)�ł��B
+recfriio r5 + α
+Linux用Friio録画プログラム(黒凡/白凡共通)です。
 
-make �Ńr���h������A
-./recfriio �^�悷��`�����l�� �^��b�� �o�͐�t�@�C����
-�Ř^�悳��܂��B
-�`�����l���ԍ��͈ȉ��̒ʂ�ł��B�����Ȃ��Ŏ��s����Ɠ������X�g���o�͂���܂��B
+make でビルドした後、
+./recfriio 録画するチャンネル 録画秒数 出力先ファイル名
+で録画されます。
+チャンネル番号は以下の通りです。引数なしで実行すると同じリストが出力されます。
   13 - 62 : UHF13 - UHF62
   K13 - K63 : CATV13 - CATV63
-  B1 : BS����               C1 : 110CS #1
+  B1 : BS朝日               C1 : 110CS #1
   B2 : BS-TBS               C2 : 110CS #2
-  B3 : BS�W���p��           C3 : 110CS #3
-  B4 : WOWOW�v���C��        C4 : 110CS #4
-  B5 : WOWOW���C�u          C5 : 110CS #5
-  B6 : WOWOW�V�l�}          C6 : 110CS #6
-  B7 : �X�^�[�`�����l��2/3  C7 : 110CS #7
-  B8 : BS�A�j�}�b�N�X       C8 : 110CS #8
-  B9 : �f�B�Y�j�[�`�����l�� C9 : 110CS #9
+  B3 : BSジャパン           C3 : 110CS #3
+  B4 : WOWOWプライム        C4 : 110CS #4
+  B5 : WOWOWライブ          C5 : 110CS #5
+  B6 : WOWOWシネマ          C6 : 110CS #6
+  B7 : スターチャンネル2/3  C7 : 110CS #7
+  B8 : BSアニマックス       C8 : 110CS #8
+  B9 : ディズニーチャンネル C9 : 110CS #9
   B10: BS11                 C10: 110CS #a
-  B11: �X�^�[�`�����l��1    C11: 110CS #b
+  B11: スターチャンネル1    C11: 110CS #b
   B12: TwellV               C12: 110CS #c
   B13: FOX bs238
-  B14: BS�X�J�p�[!
-  B15: ������w
-  B16: BS���e��
-  B17: BS�t�W
+  B14: BSスカパー!
+  B15: 放送大学
+  B16: BS日テレ
+  B17: BSフジ
   B18: NHK BS1
-  B19: NHK BS�v���~�A��
-  B20: �n�f�W���1(NHK/NHK-E/CX)
-  B21: �n�f�W���2(NTV/TBS/EX/TX)
-  B22: �O���[���`�����l��
+  B19: NHK BSプレミアム
+  B20: 地デジ難視聴1(NHK/NHK-E/CX)
+  B21: 地デジ難視聴2(NTV/TBS/EX/TX)
+  B22: グリーンチャンネル
   B23: J SPORTS 1
   B24: J SPORTS 2
   B25: IMAGICA BS
   B26: J SPORTS 3
   B27: J SPORTS 4
-  B28: BS�ނ�r�W����
-  B29: ���{�f����`�����l��
+  B28: BS釣りビジョン
+  B29: 日本映画専門チャンネル
   B30: D-Life
 
-�^��b����'-'���w�肷���^C����interrupt�����܂Ř^�悵�܂��B
-�o�͐�t�@�C������'-'���w�肷��ƕW���o�͂�TS���o�͂��܂��B���̏ꍇ���O�͕W���G���[�o�͂ɏo�͂���܂��B
+録画秒数に'-'を指定すると^C等でinterruptされるまで録画します。
+出力先ファイル名に'-'を指定すると標準出力にTSを出力します。その場合ログは標準エラー出力に出力されます。
 
-Makefile����
+Makefile中の
 B25      = -DB25
-���R�����g�A�E�g�����Ƀr���h�����ꍇ
-�܂������ARIB STD-B25 �d�l�m�F�e�X�g�v���O�����������N����AB25�f�R�[�h�@�\���g�p�\�ɂȂ�܂��B
-�I�v�V���� --b25 ���w�肷��ƁA�^�掞��B25�f�R�[�h���s���܂��B
---round N --strip --EMM ���̃I�v�V����������AARIB STD-B25 �d�l�m�F�e�X�g�v���O�����Ɠ����悤�ɓ��삵�܂��B
---b25�I�v�V�������g�p���Ȃ��ꍇ�A�^��t�@�C����Multi2�ňÍ������ꂽ��Ԃŏo�͂����̂�b25���Ńf�R�[�h���ĉ������B
+をコメントアウトせずにビルドした場合
+まるも氏のARIB STD-B25 仕様確認テストプログラムがリンクされ、B25デコード機能が使用可能になります。
+オプション --b25 を指定すると、録画時にB25デコードを行います。
+--round N --strip --EMM 等のオプションがあり、ARIB STD-B25 仕様確認テストプログラムと同じように動作します。
+--b25オプションを使用しない場合、録画ファイルはMulti2で暗号化された状態で出力されるのでb25等でデコードして下さい。
 
-Makefile����
+Makefile中の
 HDUS     = -DHDUS
-���R�����g�A�E�g�����Ƀr���h�����ꍇ
-MonsterTV HDUS/HDP�Ή��łƂ��ăR���p�C������܂��B
+をコメントアウトせずにビルドした場合
+MonsterTV HDUS/HDP対応版としてコンパイルされます。
 
-Makefile����
+Makefile中の
 UDP      = -DUDP
-���R�����g�A�E�g�����Ƀr���h�����ꍇ
-UDP���M�Ή��łƂ��ăR���p�C������܂��B
+をコメントアウトせずにビルドした場合
+UDP送信対応版としてコンパイルされます。
 
-recfriio r3 ����Friio�̏��������ɍ��}/���}������s�Ȃ��悤�ɂȂ����ׁAflock�ł̔r���ׂ̈Ƀt�@�C�����g�p���܂��B
-�f�t�H���g�ł�/var/lock/friiodetect���g�p����܂����A--lockfile �t�@�C���� �ŕύX���\�ł��B
-�ύX����ꍇ�A�S�Ă�recfriio���������b�N�t�@�C�����g�p����悤�ɒ��ӂ��ĉ������B
-�r���p�t�@�C���ɏ������݌������K�v�Ȃ̂ŁA�Ⴆ��Friio���g�p���郆�[�U���S��video�O���[�v�ɑ����Ă���ꍇ�A
+recfriio r3 からFriioの初期化時に黒凡/白凡判定を行なうようになった為、flockでの排他の為にファイルを使用します。
+デフォルトでは/var/lock/friiodetectが使用されますが、--lockfile ファイル名 で変更が可能です。
+変更する場合、全てのrecfriioが同じロックファイルを使用するように注意して下さい。
+排他用ファイルに書き込み権限が必要なので、例えばFriioを使用するユーザが全てvideoグループに属している場合、
 -rwxrwxr-x 1 mythtv video 0 2008-09-19 06:33 /var/lock/friiodetect
-�̂悤�Ɏ��O�Ƀt�@�C�����쐬���Ă����ĉ������B
+のように事前にファイルを作成しておいて下さい。
 
-�C���^�[�t�F�[�X���K���ł����A��肪����ꍇ�̓\�[�X���C�����ĉ������B
+インターフェースが適当ですが、問題がある場合はソースを修正して下さい。
 
-/dev/bus/usb ���A/proc/bus/usb �� usbfs �����邱�Ƃ��K�v�ł��B
-/dev/bus/usb�̑��݂��m�F���A�Ȃ����/proc/bus/usb�����ɍs���܂��B
-Friio�ɑΉ�����t�@�C���ɏ������݌������K�v�ł��B
-udev���g�p���Ă���ꍇ�́A91-permissions.rules�������̎g�p���Ă���/etc/udev/rules.d/91-permissions.rules�Ȃ̂�
-�Q�l�ɂ���udev�̐ݒ�t�@�C�����C�����ĉ������B�f�B�X�g���r���[�V�����ɂ��t�@�C�������͕ς��Ǝv���܂��B
-���L���ǉ����������ł��B���s���[�U��video�O���[�v�ɑ����Ă��鎖��O��ɏ����Ă��܂��B
+/dev/bus/usb か、/proc/bus/usb に usbfs があることが必要です。
+/dev/bus/usbの存在を確認し、なければ/proc/bus/usbを見に行きます。
+Friioに対応するファイルに書き込み権限が必要です。
+udevを使用している場合は、91-permissions.rulesが自分の使用している/etc/udev/rules.d/91-permissions.rulesなので
+参考にしてudevの設定ファイルを修正して下さい。ディストリビューションによりファイル名等は変わると思います。
+下記が追加した部分です。実行ユーザがvideoグループに属している事を前提に書いています。
 ====
 # friio
 SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", \
@@ -81,98 +81,98 @@ SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", \
 	MODE="0664", GROUP="video"
 ====
 
-�K�v�ȕ�:
-  g++�ŃR���p�C���o�����
-  boost���C�u����(http://www.boost.org/)
-    boost::thread��boost::filesystem���g�p���Ă��܂��B
-  GLib2.0 GTK+�̃��C�u����������Γ���͂��ł��B
+必要な物:
+  g++でコンパイル出来る環境
+  boostライブラリ(http://www.boost.org/)
+    boost::threadとboost::filesystemを使用しています。
+  GLib2.0 GTK+のライブラリを入れれば入るはずです。
 
-���m�̖��:
-  signal�̏�����S������Ă��Ȃ��B
-    LED�̐F���ς�����܂܂ɂȂ邱�ƈȊO�͖��Ȃ��͂��B
-    => TS�o�͒��� SIGTERM, SIGINT, SIGPIPE ���󂯎�����ꍇ�^����I������悤�ɂ��܂����B
-  USB�̒ʐM���^�C���A�E�g�����ꍇ�̏������s���Ă��Ȃ��B
-    => �������J�o���[���s���悤�ɂ��܂����B
-       ���������Ƀ^�C���A�E�g�����ꍇ�͏��������ŏ������蒼���܂��B
-       �o���N�]�����̃^�C���A�E�g�͖������܂��B�������@�ɑ�����肪����A
-       �^�C���A�E�g����ʂɔ��������ꍇ�Ή��ł��܂���B(�o�b�t�@�I�[�o�[�t���[�ɂȂ�܂��B)
-       �I�����ɂɃ^�C���A�E�g�����ꍇ�������Đ���I�����܂��BLED�̐F�����ɖ߂�܂���B
-  boost::thread�̃��C�u��������-mt�t���̏ꍇ��-mt�����̏ꍇ������B
-    => �R���p�C���G���[���N�������ꍇ�AMakefile���ɂ���-lboost_thread-mt��-mt���O���ĉ������B
+既知の問題:
+  signalの処理を全く入れていない。
+    LEDの色が変わったままになること以外は問題ないはず。
+    => TS出力中に SIGTERM, SIGINT, SIGPIPE を受け取った場合録画を終了するようにしました。
+  USBの通信がタイムアウトした場合の処理を行っていない。
+    => 多少リカバリーを行うようにしました。
+       初期化時にタイムアウトした場合は初期化を最初からやり直します。
+       バルク転送時のタイムアウトは無視します。実装方法に多少問題があり、
+       タイムアウトが大量に発生した場合対応できません。(バッファオーバーフローになります。)
+       終了時ににタイムアウトした場合無視して正常終了します。LEDの色が元に戻りません。
+  boost::threadのライブラリ名が-mt付きの場合と-mt無しの場合がある。
+    => コンパイルエラーが起こった場合、Makefile内にある-lboost_thread-mtの-mtを外して下さい。
 
-�ύX�_:
+変更点:
 r5:
-���b�N�t�@�C���쐬���̌�����S���[�U���������݉\�Ȃ悤�ɕύX�B
-�G���[�h�~�̈דǂݍ��ރw�b�_�t�@�C����ǉ��B
-FIFO�o�b�t�@����10�b����20�b���ɕύX�B
-�f�o�C�X�I�[�v�����̃G���[�n���h�����O�̉��P�B
-recfriio���ł�setinterface�Ăяo��(�ŋ߂̃J�[�l����recfriio�������Ȃ��Ȃ��Ă������ւ̑Ώ�)
-���C�Z���X�̐����B
+ロックファイル作成時の権限を全ユーザが書き込み可能なように変更。
+エラー防止の為読み込むヘッダファイルを追加。
+FIFOバッファ長を10秒から20秒分に変更。
+デバイスオープン時のエラーハンドリングの改善。
+recfriio側でのsetinterface呼び出し(最近のカーネルでrecfriioが動かなくなっていた事への対処)
+ライセンスの整理。
 r4:
---b25���g�p�����^�撆��B25�ŃG���[�����������ꍇ��
-B25�Ȃ��Ř^����p������悤�ɂ��܂����B
+--b25を使用した録画中にB25でエラーが発生した場合に
+B25なしで録画を継続するようにしました。
 r3:
-recfriio/recfriiobs�̋��ʉ����s���܂����B
-���}���}������J�[�h���[�_����}���������ɕύX���܂����B
-  ����ɂ�� boost::regex��boost::format������Ȃ��Ȃ�܂����B
-�����𐮗����A�N���X�����܂����B
-b25�f�R�[�h�@�\��ǉ����܂����B
-recfriiobs��URB���M�Ԋu/�ő呗�M�����������܂����B
-�^�C���A�E�g�������������ABroken Pipe���̏ꍇ�����g���C���s���悤�ɂ��܂����B
-���}�p�������V�[�P���X��BonDriver Ver.1.30�̕��Ɠ���ւ��܂����B
-r2�ȑO:
-�K�����������̂𒼂��܂����Bwork -> recfriio
-�^�C���A�E�g���������܂����B�ڍׂ͊��m�̖����Q�ƁB
-�^��b���̌v���J�n�ʒu�𒼂��܂����B�������Ɏ��Ԃ����������ꍇ�ł��I���������ς��Ȃ��Ȃ�܂����B
+recfriio/recfriiobsの共通化を行いました。
+黒凡白凡判定をカードリーダから凡初期化時に変更しました。
+  これにより boost::regexとboost::formatがいらなくなりました。
+内部を整理し、クラス化しました。
+b25デコード機能を追加しました。
+recfriiobsのURB送信間隔/最大送信数を強化しました。
+タイムアウト処理を強化し、Broken Pipe等の場合もリトライを行うようにしました。
+白凡用初期化シーケンスをBonDriver Ver.1.30の物と入れ替えました。
+r2以前:
+適当すぎた名称を直しました。work -> recfriio
+タイムアウト処理を入れました。詳細は既知の問題を参照。
+録画秒数の計測開始位置を直しました。初期化に時間がかかった場合でも終了時刻が変わらなくなりました。
 
-���C�Z���X:
-���̃v���O������BonDriver(Meru customize edition)
+ライセンス:
+このプログラムはBonDriver(Meru customize edition)
 http://2sen.dip.jp:81/cgi-bin/friioup/source/up0239.zip
-�y��
+及び
 BonDriver Ver.1.20m
   http://2sen.dip.jp:81/cgi-bin/friioup/source/up0451.zip
-BonDriver Ver.1.20m ���`�����l���ύX�V�[�P���X�C������2
+BonDriver Ver.1.20m 黒チャンネル変更シーケンス修正差分2
   http://2sen.dip.jp:81/cgi-bin/friioup/source/up0456.zip
 BonDriver Ver.1.30
   http://2sen.dip.jp/friio/files/BonDriver/BonDriver0130.zip
-����̔h�����ɂȂ�܂��B
-����ď�L�\�[�X����̔h�������ɂ��Ă͑匳��BonDriver�̃��C�Z���X�ł���A
->�T�D���C�Z���X�ɂ���
->�@�@�E���ɒ��쌠�͎咣���܂��񂪁A���L�^�p�ɏ]���悤�ɂ��肢���܂��B
+からの派生物になります。
+よって上記ソースからの派生部分については大元のBonDriverのライセンスである、
+>５．ライセンスについて
+>　　・特に著作権は主張しませんが、下記運用に従うようにお願いします。
 >
->�@�@(1)�uBonDriver.dll�v���I���W�i���̂܂܃A�v���P�[�V�����ɕt�����Ĕz�z����ꍇ�B
+>　　(1)「BonDriver.dll」をオリジナルのままアプリケーションに付属して配布する場合。
 >
->�@�@�@�@�A�v���P�[�V�����̃o�[�W�������y�уh�L�������g�ɒ��쌠�\���͕K�v����܂���B
->�@�@�@�@�u�g���c�[�����̐l�v�������́uhttp://2sen.dip.jp/friio/�v�̋L�ڂ����Ă��\���܂��񂪔C�ӂł��B
+>　　　　アプリケーションのバージョン情報及びドキュメントに著作権表示は必要ありません。
+>　　　　「拡張ツール中の人」もしくは「http://2sen.dip.jp/friio/」の記載をしても構いませんが任意です。
 >
->�@�@(2)�\�[�X�R�[�h�𗬗p���A�v���P�[�V�����ɑg�ݍ��ނ������̓��C�u�����Ƃ��čč\�����Ĕz�z����ꍇ�B
+>　　(2)ソースコードを流用しアプリケーションに組み込むもしくはライブラリとして再構成して配布する場合。
 >
->�@�@�@�@���쌠�\���ɂ��Ă�(1)�ɏ]���܂����A�K���Œ�ł����Y�����̃\�[�X�R�[�h�����J���Ă��������B
-���K�p����܂��B
+>　　　　著作権表示については(1)に従いますが、必ず最低でも当該処理のソースコードを公開してください。
+が適用されます。
 
-��L�ȊO�̕���(�����ނ�USB�̃R�}���h�Ɋւ��Ȃ�����)�ɂ��Ă� Public Domain �Ƃ��Ē񋟂��܂��B
+上記以外の部分(おおむねUSBのコマンドに関わらない部分)については Public Domain として提供します。
 
-�܂��AARIB STD-B25 �d�l�m�F�e�X�g�v���O�����������N�����ꍇ(�f�t�H���g�Ń����N���܂�)�A
-BonDriver�̃��C�Z���X�ɉ�����ARIB STD-B25 �d�l�m�F�e�X�g�v���O�����̃��C�Z���X�ł���
->�@�E�\�[�X�R�[�h�𗘗p�������Ƃɂ���āA������̃g���u�����������Ă�
->�@�@�Ζ� �a�m�͐ӔC�𕉂�Ȃ�
->�@�E�\�[�X�R�[�h�𗘗p�������Ƃɂ���āA�v���O�����ɖ�肪�������Ă�
->�@�@�Ζ� �a�m�͐ӔC�𕉂�Ȃ�
+また、ARIB STD-B25 仕様確認テストプログラムをリンクした場合(デフォルトでリンクします)、
+BonDriverのライセンスに加えてARIB STD-B25 仕様確認テストプログラムのライセンスである
+>　・ソースコードを利用したことによって、特許上のトラブルが発生しても
+>　　茂木 和洋は責任を負わない
+>　・ソースコードを利用したことによって、プログラムに問題が発生しても
+>　　茂木 和洋は責任を負わない
 >
->�@��L 2 �����ɓ��ӂ��č쐬���ꂽ�񎟓I���앨�ɑ΂��āA�Ζ� �a�m��
->�@������҂ɗ^�����鏔�������s�g���Ȃ�
-���K�p����܂��B
+>　上記 2 条件に同意して作成された二次的著作物に対して、茂木 和洋は
+>　原著作者に与えられる諸権利を行使しない
+が適用されます。
 
-�\�[�X���A.trace�̕t�����t�@�C����.trace�����̃t�@�C�����ɕύX���ăr���h���鎖�ɂ��
-�G���[�������̃X�^�b�N�g���[�X�@�\���L���ɂȂ�܂��B
-���̃R�[�h�� http://0xcc.net/blog/archives/000073.html ����̔h�����ƂȂ�܂��B
-�r���h�ɂ�libbfd(binutils-dev)���K�v�ɂȂ�܂��B
+ソース中、.traceの付いたファイルを.trace無しのファイル名に変更してビルドする事により
+エラー発生時のスタックトレース機能が有効になります。
+このコードは http://0xcc.net/blog/archives/000073.html からの派生物となります。
+ビルドにはlibbfd(binutils-dev)が必要になります。
 
-���̑�:
-���̃v���O������AS-IS�Œ񋟂���܂��B�Ȃɂ���肪�N�����Ă��ӔC�͎��Ă܂���B
+その他:
+このプログラムはAS-ISで提供されます。なにか問題が起こっても責任は持てません。
 
-����m�F��:
+動作確認環境:
   Debian GNU/Linux squeeze(stable)
   Linux 2.6.37.2 SMP PREEMPT x86_64
 
-��N/E9PqspSk / Clworld.
+◆N/E9PqspSk / Clworld.
