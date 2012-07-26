@@ -3,8 +3,6 @@
 #include <string.h>
 
 #include <fcntl.h>
-#include <time.h>
-#include <sys/time.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -16,6 +14,7 @@
 	#define __STDC_FORMAT_MACROS
 	#include <inttypes.h>
 	#include <unistd.h>
+	#include <sys/time.h>
 #endif
 
 #include "arib_std_b25.h"
@@ -170,13 +169,12 @@ static void test_arib_std_b25(const char *src, const char *dst, OPTION *opt)
 
 	int64_t total;
 	int64_t offset;
-
-	unsigned long ticktock = 0;
-	#if defined(WIN32)
+#if defined(WIN32)
 	unsigned long tick,tock;
-	#else
-	struct timeval tock, tick;
-	#endif
+#else
+	struct timeval tick,tock;
+	double millisec;
+#endif
 	double mbps;
 
 	ARIB_STD_B25 *b25;
@@ -253,11 +251,11 @@ static void test_arib_std_b25(const char *src, const char *dst, OPTION *opt)
 	}
 
 	offset = 0;
-	#if defined(WIN32)
+#if defined(WIN32)
 	tock = GetTickCount();
-	#else
+#else
 	gettimeofday(&tock, NULL);
-	#endif
+#endif
 	while( (n = _read(sfd, data, sizeof(data))) > 0 ){
 		sbuf.data = data;
 		sbuf.size = n;
@@ -285,19 +283,24 @@ static void test_arib_std_b25(const char *src, const char *dst, OPTION *opt)
 		offset += sbuf.size;
 		if(opt->verbose != 0){
 			m = (int)(10000*offset/total);
-			#if defined(WIN32)
-			tick = GetTickCount();
-			ticktock = tick-tock;
-			#else
-			gettimeofday(&tick, NULL);
-			ticktock = (tick.tv_sec - tock.tv_sec)*1000 + tick.tv_usec/1000 - tock.tv_usec/1000;
-			#endif
 			mbps = 0.0;
-			if (ticktock > 100) {
+#if defined(WIN32)
+			tick = GetTickCount();
+			if (tick-tock > 100) {
 				mbps = offset;
 				mbps /= 1024;
-				mbps /= ticktock;
+				mbps /= (tick-tock);
 			}
+#else
+			gettimeofday(&tick, NULL);
+			millisec = (tick.tv_sec - tock.tv_sec) * 1000;
+			millisec += (tick.tv_usec - tock.tv_usec) / 1000;
+			if(millisec > 100.0) {
+				mbps = offset;
+				mbps /= 1024;
+				mbps /= millisec;
+			}
+#endif
 			fprintf(stderr, "\rprocessing: %2d.%02d%% [%6.2f MB/sec]", m/100, m%100, mbps);
 		}
 	}
@@ -324,11 +327,23 @@ static void test_arib_std_b25(const char *src, const char *dst, OPTION *opt)
 
 	if(opt->verbose != 0){
 		mbps = 0.0;
-		if (ticktock > 100) {
+#if defined(WIN32)
+		tick = GetTickCount();
+		if (tick-tock > 100) {
 			mbps = offset;
 			mbps /= 1024;
-			mbps /= ticktock;
+			mbps /= (tick-tock);
 		}
+#else
+		gettimeofday(&tick, NULL);
+		millisec = (tick.tv_sec - tock.tv_sec) * 1000;
+		millisec += (tick.tv_usec - tock.tv_usec) / 1000;
+		if(millisec > 100.0) {
+			mbps = offset;
+			mbps /= 1024;
+			mbps /= millisec;
+		}
+#endif
 		fprintf(stderr, "\rprocessing: finish  [%6.2f MB/sec]\n", mbps);
 		fflush(stderr);
 		fflush(stdout);

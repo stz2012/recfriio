@@ -409,6 +409,8 @@ static void extract_emm_fixed_part(EMM_FIXED_PART *dst, uint8_t *src);
 static uint8_t *resync(uint8_t *head, uint8_t *tail, int32_t unit);
 static uint8_t *resync_force(uint8_t *head, uint8_t *tail, int32_t unit);
 
+/* static uint32_t crc32(uint8_t *head, uint8_t *tail); */
+
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  interface method implementation
  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
@@ -1792,9 +1794,9 @@ static void dump_pts(uint8_t *src, int32_t crypt)
 	int32_t pts_dts_flag;
 	int64_t pts,dts;
 	
-	src += 4; // TS ƒwƒbƒ_•”
-	src += 4; // start_code_prefix + stream_id •”
-	src += 2; // packet_length •”
+	src += 4; // TS ãƒ˜ãƒƒãƒ€éƒ¨
+	src += 4; // start_code_prefix + stream_id éƒ¨
+	src += 2; // packet_length éƒ¨
 
 	pts_dts_flag = (src[1] >> 6) & 3;
 
@@ -2130,7 +2132,7 @@ LAST:
 static int proc_emm(ARIB_STD_B25_PRIVATE_DATA *prv)
 {
 	int r;
-	int i,j,n;
+	int j,n;
 
 	int len;
 
@@ -2167,7 +2169,6 @@ static int proc_emm(ARIB_STD_B25_PRIVATE_DATA *prv)
 		head = sect.data;
 		tail = sect.tail - 4;
 
-		i = 0;
 		while( (head+13) <= tail ){
 			
 			extract_emm_fixed_part(&emm_hdr, head);
