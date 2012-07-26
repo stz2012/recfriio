@@ -7,7 +7,7 @@ HDUS     = -DHDUS
 UDP      = -DUDP
 
 ifdef B25
-  B25_PATH = ../arib25v025/arib25/src
+  B25_PATH = ../arib25
   B25_CLEAN = clean_b25
   B25_OBJS = B25Decoder.o
   B25_OBJS_EXT = $(B25_PATH)/arib_std_b25.o $(B25_PATH)/b_cas_card.o $(B25_PATH)/multi2.o $(B25_PATH)/ts_section_parser.o
@@ -26,7 +26,7 @@ endif
 DIST     = .
 CC       = gcc
 CXX      = g++
-CXXFLAGS = -O2 -g -Wall -pthread -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 $(B25) $(HDUS) $(UDP) `pkg-config --cflags glib-2.0`
+CXXFLAGS = -O2 -march=native -g -Wall -pthread -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 $(B25) $(HDUS) $(UDP) `pkg-config --cflags glib-2.0`
 LDFLAGS  = 
 
 OBJS   = recfriio.o usbops.o error.o IoThread.o Recordable.o AbstractFriio.o FriioWhite.o FriioBlack.o FriioWhiteWrapper.o FriioExpress.o tssplitter_lite.o $(B25_OBJS) $(HDUS_OBJS) $(UDP_OBJS)
