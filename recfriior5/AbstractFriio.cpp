@@ -198,9 +198,9 @@ AbstractFriio::searchFriios()
 				// バスに繋がってるデバイスでループ
 				if (!boost::filesystem::is_directory(*dev_iter)) {
 					// Friioであるかチェック
-					if (is_friio(dev_iter->string())) {
+					if (is_friio(dev_iter->path().string())) {
 						// ここまで来たらこのデバイスはfriioです。
-						friios.push_back(dev_iter->string());
+						friios.push_back(dev_iter->path().string());
 					}
 				}
 			}
