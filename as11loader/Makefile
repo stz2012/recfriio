@@ -1,8 +1,9 @@
 TARGETS = as11loader
-CFLAGS = -O2 -g -lusb
+CFLAGS = -O2 -g
+LIBS = -lusb
 
 $(TARGETS) : $(TARGETS).c
-	gcc $(CFLAGS) -o $@ $^
+	gcc $(CFLAGS) -o $@ $^ $(LIBS)
 
 all: $(TARGETS)
 
