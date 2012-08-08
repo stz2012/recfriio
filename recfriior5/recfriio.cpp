@@ -34,13 +34,14 @@
 #include "error.hpp"
 #include "Recordable.hpp"
 #ifdef B25
-	#include "B25Decoder.hpp"
+#include "B25Decoder.hpp"
 #endif /* defined(B25) */
 #ifdef UDP
-	#include "Udp.hpp"
+#include "Udp.hpp"
 #endif /* defined(UDP) */
-
+#ifdef TSSL
 #include "tssplitter_lite.hpp"
+#endif /* defined(TSSL) */
 
 /**
  * usageの表示
@@ -60,25 +61,27 @@ void usage(char *argv[])
 #ifdef UDP
 		<< " [--udp ip [--port N]]"
 #endif /* defined(UDP) */
+#ifdef TSSL
 		<< " [--sid SID1,SID2]"
+#endif /* defined(TSSL) */
 		<< " channel recsec destfile" << std::endl;
 	std::cerr << "Channels:" << std::endl;
 	std::cerr << "  13 - 62 : UHF13 - UHF62" << std::endl;
 #ifdef HDUS
 	std::cerr << "  K13 - K63 : CATV13 - CATV63" << std::endl;
 #endif /* defined(HDUS) */
-	std::cerr << "  B1 : BS朝日               C1 : 110CS #1" << std::endl;
-	std::cerr << "  B2 : BS-TBS               C2 : 110CS #2" << std::endl;
-	std::cerr << "  B3 : BSジャパン           C3 : 110CS #3" << std::endl;
-	std::cerr << "  B4 : WOWOWプライム        C4 : 110CS #4" << std::endl;
-	std::cerr << "  B5 : WOWOWライブ          C5 : 110CS #5" << std::endl;
-	std::cerr << "  B6 : WOWOWシネマ          C6 : 110CS #6" << std::endl;
-	std::cerr << "  B7 : スターチャンネル2/3  C7 : 110CS #7" << std::endl;
-	std::cerr << "  B8 : BSアニマックス       C8 : 110CS #8" << std::endl;
-	std::cerr << "  B9 : ディズニーチャンネル C9 : 110CS #9" << std::endl;
-	std::cerr << "  B10: BS11                 C10: 110CS #a" << std::endl;
-	std::cerr << "  B11: スターチャンネル1    C11: 110CS #b" << std::endl;
-	std::cerr << "  B12: TwellV               C12: 110CS #c" << std::endl;
+	std::cerr << "  B1 : BS朝日               C1 : ND2  110CS" << std::endl;
+	std::cerr << "  B2 : BS-TBS               C2 : ND4  110CS" << std::endl;
+	std::cerr << "  B3 : WOWOWプライム        C3 : ND6  110CS" << std::endl;
+	std::cerr << "  B4 : BSジャパン           C4 : ND8  110CS" << std::endl;
+	std::cerr << "  B5 : WOWOWライブ          C5 : ND10 110CS" << std::endl;
+	std::cerr << "  B6 : WOWOWシネマ          C6 : ND12 110CS" << std::endl;
+	std::cerr << "  B7 : スターチャンネル2/3  C7 : ND14 110CS" << std::endl;
+	std::cerr << "  B8 : BSアニマックス       C8 : ND16 110CS" << std::endl;
+	std::cerr << "  B9 : ディズニーチャンネル C9 : ND18 110CS" << std::endl;
+	std::cerr << "  B10: BS11                 C10: ND20 110CS" << std::endl;
+	std::cerr << "  B11: スターチャンネル1    C11: ND22 110CS" << std::endl;
+	std::cerr << "  B12: TwellV               C12: ND24 110CS" << std::endl;
 	std::cerr << "  B13: FOX bs238" << std::endl;
 	std::cerr << "  B14: BSスカパー!" << std::endl;
 	std::cerr << "  B15: 放送大学" << std::endl;
@@ -121,8 +124,10 @@ struct Args {
 	std::string ip;
 	int port;
 #endif /* defined(UDP) */
+#ifdef TSSL
 	bool splitter;
 	char *sid_list;
+#endif /* defined(TSSL) */
 	bool stdout;
 	TunerType type;
 	BandType band;
@@ -156,8 +161,10 @@ parseOption(int argc, char *argv[])
 		"",
 		UDP_PORT,
 #endif /* defined(UDP) */
+#ifdef TSSL
 		false,
 		NULL,
+#endif /* defined(TSSL) */
 		false,
 		TUNER_FRIIO_WHITE,
 		BAND_UHF,
@@ -189,7 +196,9 @@ parseOption(int argc, char *argv[])
 			{ "udp",      1, NULL, 'u' },
 			{ "port",     1, NULL, 'p' },
 #endif /* defined(UDP) */
+#ifdef TSSL
 			{ "sid",      1, NULL, 'i' },
+#endif /* defined(TSSL) */
 			{ 0,          0, NULL, 0   }
 		};
 		
@@ -200,7 +209,10 @@ parseOption(int argc, char *argv[])
 #ifdef UDP
 		                    "u:p:"
 #endif /* defined(B25) */
-		                    "l:i:",
+#ifdef TSSL
+		                    "i:"
+#endif /* defined(TSSL) */
+		                    "l:",
 		                    long_options, &option_index);
 		if (r < 0) {
 			break;
@@ -246,10 +258,12 @@ parseOption(int argc, char *argv[])
 				args.port = atoi(optarg);
 				break;
 #endif /* defined(UDP) */
+#ifdef TSSL
 			case 'i':
 				args.splitter = true;
 				args.sid_list = optarg;
 				break;
+#endif /* defined(TSSL) */
 			default:
 				break;
 		}
@@ -409,6 +423,7 @@ main(int argc, char *argv[])
 	}
 #endif /* defined(UDP) */
 
+#ifdef TSSL
 	/* initialize splitter */
 	splitbuf_t splitbuf;
 	splitbuf.size = 0;
@@ -422,6 +437,7 @@ main(int argc, char *argv[])
 			return 1;
 		}
 	}
+#endif /* defined(TSSL) */
 
 	// Tuner取得
 	boost::scoped_ptr<Recordable> tuner(createRecordable(args.type));
@@ -507,14 +523,16 @@ main(int argc, char *argv[])
 	sigaction(SIGTERM, &sa, NULL);
 	sigaction(SIGPIPE, &sa, NULL);
 	
+	uint8_t		*buf = NULL;
+	int			rlen;
+	
 	// 受信スレッド起動
 	tuner->startStream();
 	// データ読み出し
 	uint32_t urb_error_cnt = 0;
 	while (!caughtSignal && (args.forever || time(NULL) <= time_start + args.recsec)) {
 		try {
-			const uint8_t *buf = NULL;
-			int rlen = tuner->getStream(&buf, 200);
+			rlen = tuner->getStream((const uint8_t **)&buf, 200);
 			if (0 == rlen) {
 				continue;
 			}
@@ -524,9 +542,9 @@ main(int argc, char *argv[])
 			if (args.b25) {
 				static int f_b25_sync = 0;
 				try {
-					const uint8_t *b25buf = buf;
-					b25dec.put(b25buf, rlen);
-					rlen = b25dec.get(&b25buf);
+					uint8_t *b25buf;
+					b25dec.put(buf, rlen);
+					rlen = b25dec.get((const uint8_t **)&b25buf);
 					if (0 == rlen) {
 						continue;
 					}
@@ -546,6 +564,7 @@ main(int argc, char *argv[])
 			}
 #endif /* defined(B25) */
 
+#ifdef TSSL
 			if (args.splitter) {
 				splitbuf.size = 0;
 				while (rlen) {
@@ -585,6 +604,7 @@ main(int argc, char *argv[])
 			fin:
 				;
 			}
+#endif /* defined(TSSL) */
 
 			fwrite(buf, 1, rlen, dest);
 
@@ -614,25 +634,61 @@ main(int argc, char *argv[])
 	sigaction(SIGTERM, &saDefault, NULL);
 	sigaction(SIGPIPE, &saDefault, NULL);
 
+	rlen = 0;
+	buf = NULL;
+
 #ifdef B25
 	// B25デコーダ内のデータを出力する。
 	if (args.b25) {
 		try {
 			b25dec.flush();
-			const uint8_t *buf = NULL;
-			int rlen = b25dec.get(&buf);
-			if (0 < rlen) {
-				fwrite(buf, 1, rlen, dest);
-			}
+			rlen = b25dec.get((const uint8_t **)&buf);
 		} catch (b25_error& e) {
 			log << "B25 Error: " << e.what() << std::endl;
 			result = 1;
 		}
 	}
 #endif /* defined(B25) */
-
+#ifdef TSSL
 	if (args.splitter) {
+		splitbuf.size = 0;
+		while (rlen) {
+			/* 分離対象PIDの抽出 */
+			if (split_select_finish != TSS_SUCCESS) {
+				split_select_finish = split_select(splitter, buf, rlen);
+				if (split_select_finish == TSS_NULL) {
+					/* mallocエラー発生 */
+					log << "split_select malloc failed" << std::endl;
+					args.splitter = false;
+					result = 1;
+					break;
+				} else if (split_select_finish != TSS_SUCCESS) {
+					// 分離対象PIDが完全に抽出できるまで出力しない
+					// 1秒程度余裕を見るといいかも
+					time_t cur_time;
+					time(&cur_time);
+					if (cur_time - time_start > 4) {
+						args.splitter = false;
+						result = 1;
+					}
+					break;
+				}
+			}
+			/* 分離対象以外をふるい落とす */
+			code = split_ts(splitter, buf, rlen, &splitbuf);
+			if (code != TSS_SUCCESS) {
+				log << "split_ts failed" << std::endl;
+				break;
+			}
+			break;
+		}
+		rlen = splitbuf.size;
+		buf = splitbuf.buffer;
 		split_shutdown(splitter);
+	}
+#endif /* defined(TSSL) */
+	if (0 < rlen) {
+		fwrite(buf, 1, rlen, dest);
 	}
 
 	// 時間計測
