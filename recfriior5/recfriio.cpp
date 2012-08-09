@@ -28,6 +28,13 @@
 #include <vector>
 #include <map>
 
+#ifdef HTTP
+#include <sys/socket.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#endif /* defined(HTTP) */
+
 #include <boost/scoped_ptr.hpp>
 
 #include "setting.hpp"
@@ -61,6 +68,9 @@ void usage(char *argv[])
 #ifdef UDP
 		<< " [--udp ip [--port N]]"
 #endif /* defined(UDP) */
+#ifdef HTTP
+		<< " [--http PortNo]"
+#endif /* defined(HTTP) */
 #ifdef TSSL
 		<< " [--sid SID1,SID2]"
 #endif /* defined(TSSL) */
@@ -124,6 +134,10 @@ struct Args {
 	std::string ip;
 	int port;
 #endif /* defined(UDP) */
+#ifdef HTTP
+	bool http_mode;
+	int http_port;
+#endif /* defined(HTTP) */
 #ifdef TSSL
 	bool splitter;
 	char *sid_list;
@@ -136,6 +150,73 @@ struct Args {
 	int recsec;
 	char* destfile;
 };
+
+/**
+ * チャンネルの解析
+ */
+void
+parseChannel(Args* args, char* chstr)
+{
+	int channel = 0;
+	switch (chstr[0]) {
+		case 'B':
+		case 'b':
+			args->type = TUNER_FRIIO_BLACK;
+			args->band = BAND_BS;
+			chstr++;
+			channel = atoi(chstr);
+			if (channel < 1 || 30 < channel) {
+				std::cerr << "channel must be (B1 <= channel <= B30)." << std::endl;
+				exit(1);
+			}
+			break;
+		case 'C':
+		case 'c':
+			args->type = TUNER_FRIIO_BLACK;
+			args->band = BAND_CS;
+			chstr++;
+			channel = atoi(chstr);
+			if (channel < 1 || 12 < channel) {
+				std::cerr << "channel must be (C1 <= channel <= C12)." << std::endl;
+				exit(1);
+			}
+			break;
+#ifdef HDUS
+		case 'K':
+		case 'k':
+			if( args->use_hdus )
+				args->type = TUNER_HDUS;
+			else
+				args->type = TUNER_HDP;
+			args->band = BAND_CATV;
+			chstr++;
+			channel = atoi(chstr);
+			if (channel < 13 || 63 < channel) {
+				std::cerr << "channel must be (K13 <= channel <= K63)." << std::endl;
+				exit(1);
+			}
+			break;
+#endif 
+		default:
+#ifdef HDUS
+			if( args->use_hdus )
+				args->type = TUNER_HDUS;
+			else if( args->use_hdp )
+				args->type = TUNER_HDP;
+			else
+				args->type = TUNER_FRIIO_WHITE;
+#else
+			args->type = TUNER_FRIIO_WHITE;
+#endif /* defined(HDUS) */
+			args->band = BAND_UHF;
+			channel = atoi(chstr);
+			if (channel < 13 || 62 < channel) {
+				std::cerr << "channel must be (13 <= channel <= 62)." << std::endl;
+				exit(1);
+			}
+	}
+	args->channel = channel;
+}
 
 /**
  * オプションの解析
@@ -161,6 +242,10 @@ parseOption(int argc, char *argv[])
 		"",
 		UDP_PORT,
 #endif /* defined(UDP) */
+#ifdef HTTP
+		false,
+		HTTP_PORT,
+#endif /* defined(HTTP) */
 #ifdef TSSL
 		false,
 		NULL,
@@ -196,6 +281,9 @@ parseOption(int argc, char *argv[])
 			{ "udp",      1, NULL, 'u' },
 			{ "port",     1, NULL, 'p' },
 #endif /* defined(UDP) */
+#ifdef HTTP
+			{ "http",     1, NULL, 'H' },
+#endif /* defined(HTTP) */
 #ifdef TSSL
 			{ "sid",      1, NULL, 'i' },
 #endif /* defined(TSSL) */
@@ -209,6 +297,9 @@ parseOption(int argc, char *argv[])
 #ifdef UDP
 		                    "u:p:"
 #endif /* defined(B25) */
+#ifdef HTTP
+		                    "H:"
+#endif /* defined(HTTP) */
 #ifdef TSSL
 		                    "i:"
 #endif /* defined(TSSL) */
@@ -258,6 +349,14 @@ parseOption(int argc, char *argv[])
 				args.port = atoi(optarg);
 				break;
 #endif /* defined(UDP) */
+#ifdef HTTP
+			case 'H':
+				args.http_mode = true;
+				args.http_port = atoi(optarg);
+				args.forever = true;
+				return args;
+				break;
+#endif /* defined(HTTP) */
 #ifdef TSSL
 			case 'i':
 				args.splitter = true;
@@ -273,45 +372,7 @@ parseOption(int argc, char *argv[])
 		usage(argv);
 	}
 	
-	char* chstr    = argv[optind++];
-	switch (chstr[0]) {
-		case 'B':
-		case 'b':
-			args.type = TUNER_FRIIO_BLACK;
-			args.band = BAND_BS;
-			chstr++;
-			break;
-		case 'C':
-		case 'c':
-			args.type = TUNER_FRIIO_BLACK;
-			args.band = BAND_CS;
-			chstr++;
-			break;
-#ifdef HDUS
-		case 'K':
-		case 'k':
-			if( args.use_hdus )
-				args.type = TUNER_HDUS;
-			else
-				args.type = TUNER_HDP;
-			args.band = BAND_CATV;
-			chstr++;
-			break;
-#endif 
-		default:
-#ifdef HDUS
-			if( args.use_hdus )
-				args.type = TUNER_HDUS;
-			else if( args.use_hdp )
-				args.type = TUNER_HDP;
-			else
-				args.type = TUNER_FRIIO_WHITE;
-#else
-			args.type = TUNER_FRIIO_WHITE;
-#endif /* defined(HDUS) */
-			args.band = BAND_UHF;
-	}
-	args.channel   = atoi(chstr);
+	parseChannel(&args, argv[optind++]);
 	char *recsecstr = argv[optind++];
 	if (strcmp("-", recsecstr) == 0) {
 		args.forever = true;
@@ -324,6 +385,32 @@ parseOption(int argc, char *argv[])
 	
 	return args;
 }
+
+#ifdef HTTP
+//read 1st line from socket
+int read_line(int socket, char *p){
+	int len = 0;
+	while (1){
+		int ret;
+		ret = read(socket, p, 1);
+		if ( ret == -1 ){
+			perror("read");
+			exit(1);
+		} else if ( ret == 0 ){
+			break;
+		}
+		if ( *p == '\n' ){
+			p++;
+			len++;
+			break;
+		}
+		p++;
+		len++;
+	}
+	*p = '\0';
+	return len;
+}
+#endif /* defined(HTTP) */
 
 /** シグナルを受けた */
 static bool caughtSignal = false;
@@ -342,40 +429,18 @@ main(int argc, char *argv[])
 	Args args = parseOption(argc, argv);
 	// 正常終了時戻り値
 	int result = 0;
+	boost::scoped_ptr<Recordable> tuner(NULL);
+	timeval tv_start;
+#ifdef UDP
+	Udp udp;
+#endif /* defined(UDP) */
+#ifdef HTTP
+	int dest = 1; // stdout
+	int connected_socket = 0;
+	int listening_socket = 0;
+#endif /* defined(HTTP) */
 	
 	// 引数確認
-	switch (args.band) {
-#ifdef HDUS
-		case BAND_CATV:
-			if (args.channel < 13 || 63 < args.channel) {
-				std::cerr << "channel must be (13 <= channel <= 63)." << std::endl;
-				exit(1);
-			}
-			break;
-#endif /* defined(HDUS) */
-		case BAND_UHF:
-			if (args.channel < 13 || 62 < args.channel) {
-				std::cerr << "channel must be (13 <= channel <= 62)." << std::endl;
-				exit(1);
-			}
-			break;
-		case BAND_BS:
-			if (args.channel < 1 || 30 < args.channel) {
-				std::cerr << "channel must be (B1 <= channel <= B30)." << std::endl;
-				exit(1);
-			}
-			break;
-		case BAND_CS:
-			if (args.channel < 1 || 12 < args.channel) {
-				std::cerr << "channel must be (C1 <= channel <= C12)." << std::endl;
-				exit(1);
-			}
-			break;
-		default:
-			std::cerr << "unknown channel." << std::endl;
-			exit(1);
-	}
-	
 	if (!args.forever && args.recsec <= 0) {
 		std::cerr << "recsec must be (recsec > 0)." << std::endl;
 		exit(1);
@@ -386,6 +451,114 @@ main(int argc, char *argv[])
 	
 	// ログ出力先設定
 	std::ostream& log = args.stdout ? std::cerr : std::cout;
+
+#ifdef HTTP
+	if( !args.http_mode ){
+		// 出力先ファイルオープン
+		if(!args.stdout) {
+			dest = open(args.destfile, (O_RDWR | O_CREAT | O_TRUNC), 0666);
+			if (0 > dest) {
+				std::cerr << "can't open file '" << args.destfile << "' to write." << std::endl;
+				exit(1);
+			}
+		}
+	}else{
+		struct sockaddr_in	sin;
+		int					sock_optval = 1;
+		int					ret;
+
+		fprintf(stderr, "run as a daemon..\n");
+		if(daemon(1,1)){
+			perror("failed to start");
+			exit(1);
+		}
+
+		listening_socket = socket(AF_INET, SOCK_STREAM, 0);
+		if ( listening_socket == -1 ){
+			perror("socket");
+			exit(1);
+		}
+
+		if ( setsockopt(listening_socket, SOL_SOCKET, SO_REUSEADDR, &sock_optval, sizeof(sock_optval)) == -1 ){
+			perror("setsockopt");
+			exit(1);
+		}
+
+		sin.sin_family = AF_INET;
+		sin.sin_port = htons(args.http_port);
+		sin.sin_addr.s_addr = htonl(INADDR_ANY);
+
+		if ( bind(listening_socket, (struct sockaddr *)&sin, sizeof(sin)) < 0 ){
+			perror("bind");
+			exit(1);
+		}
+
+		ret = listen(listening_socket, SOMAXCONN);
+		if ( ret == -1 ){
+			perror("listen");
+			exit(1);
+		}
+		fprintf(stderr,"listening at port %d\n", args.http_port);
+	}
+
+	while(1){
+		if ( args.http_mode ) {
+			struct sockaddr_in	peer_sin;
+			int					read_size;
+			unsigned int		len;
+			char				buffer[256];
+			char				s0[256],s1[256],s2[256];
+			char				delim[] = "/";
+			char				*channel;
+			char				*sidflg;
+
+			len = sizeof(peer_sin);
+			connected_socket = accept(listening_socket, (struct sockaddr *)&peer_sin, &len);
+			if ( connected_socket == -1 ) {
+				perror("accept");
+				exit(1);
+			}
+
+			int error;
+			char hbuf[NI_MAXHOST], nhbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
+			error = getnameinfo((struct sockaddr *)&peer_sin, sizeof(peer_sin), hbuf, sizeof(hbuf), NULL, 0, 0);
+			if (error) {
+				fprintf(stderr, "getnameinfo(): %s\n", gai_strerror(error));
+				exit(1);
+			}
+			error = getnameinfo((struct sockaddr *)&peer_sin, sizeof(peer_sin), nhbuf, sizeof(nhbuf), sbuf, sizeof(sbuf), NI_NUMERICHOST | NI_NUMERICSERV);
+			if (error) {
+				fprintf(stderr, "getnameinfo(): %s\n", gai_strerror(error));
+				exit(1);
+			}
+			fprintf(stderr,"connect from: %s [%s] port %s\n", hbuf, nhbuf, sbuf);
+
+			read_size = read_line(connected_socket, buffer);
+			fprintf(stderr, "request command is %s\n", buffer);
+			// ex:GET /C8/333 HTTP/1.1
+			sscanf(buffer, "%s%s%s", s0, s1, s2);
+			channel = strtok(s1, delim);
+			if (channel != NULL) {
+				fprintf(stderr, "Channel: %s\n", channel);
+				parseChannel(&args, channel);
+				sidflg = strtok(NULL, delim);
+				if (sidflg != NULL) {
+					fprintf(stderr, "SID: %s\n", sidflg);
+#ifdef TSSL
+					args.splitter = true;
+					args.sid_list = sidflg;
+				} else {
+					args.splitter = false;
+					args.sid_list = NULL;
+#endif /* defined(TSSL) */
+				}
+			}
+			char header[] =  "HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nCache-Control: no-cache\r\n\r\n";
+			write(connected_socket, header, strlen(header));
+			//set write target to http
+			dest = connected_socket;
+		}
+#endif /* defined(HTTP) */
 
 #ifdef B25
 	// B25初期化
@@ -410,7 +583,6 @@ main(int argc, char *argv[])
 
 #ifdef UDP
 	// UDP初期化
-	Udp udp;
 	if( ! args.ip.empty() ){
 		try{
 			udp.setLog(&log);
@@ -440,7 +612,7 @@ main(int argc, char *argv[])
 #endif /* defined(TSSL) */
 
 	// Tuner取得
-	boost::scoped_ptr<Recordable> tuner(createRecordable(args.type));
+	tuner.reset(createRecordable(args.type));
 #ifdef HDUS
 	if( args.type == TUNER_HDUS ) log << "Tuner type is HDUS." << std::endl;
 	else if( args.type == TUNER_HDP ) log << "Tuner type is HDP." << std::endl;
@@ -493,6 +665,7 @@ main(int argc, char *argv[])
 		break;
 	}
 	
+#ifndef HTTP
 	// 出力先ファイルオープン
 	FILE *dest = stdout;
 	if (!args.stdout) {
@@ -502,10 +675,10 @@ main(int argc, char *argv[])
 			exit(1);
 		}
 	}
+#endif /* !defined(HTTP) */
 	
 	// 出力開始/時間計測
 	log << "Output ts file." << std::endl;
-	timeval tv_start;
 	if (gettimeofday(&tv_start, NULL) < 0) {
 		std::cerr << "gettimeofday failed." << std::endl;
 		exit(1);
@@ -606,7 +779,20 @@ main(int argc, char *argv[])
 			}
 #endif /* defined(TSSL) */
 
+#ifdef HTTP
+			while(rlen > 0) {
+				ssize_t wc;
+				wc = write(dest, buf, rlen);
+				if(wc < 0) {
+					log << "write failed." << std::endl;
+					break;
+				}
+				rlen -= wc;
+				buf += wc;
+			}
+#else
 			fwrite(buf, 1, rlen, dest);
+#endif /* defined(HTTP) */
 
 #ifdef UDP
 			// UDP 配信
@@ -624,6 +810,11 @@ main(int argc, char *argv[])
 		}
 	}
 	if (caughtSignal) {
+#ifdef HTTP
+		if( args.http_mode )
+			caughtSignal = false;
+		else
+#endif /* defined(HTTP) */
 		log << "interrupted." << std::endl;
 	}
 	// 受信スレッド停止
@@ -687,9 +878,29 @@ main(int argc, char *argv[])
 		split_shutdown(splitter);
 	}
 #endif /* defined(TSSL) */
+#ifdef HTTP
+		while(rlen > 0) {
+			ssize_t wc;
+			wc = write(dest, buf, rlen);
+			if(wc < 0) {
+				log << "write failed." << std::endl;
+				break;
+			}
+			rlen -= wc;
+			buf += wc;
+		}
+		if( args.http_mode ){
+			/* close http socket */
+			close(dest);
+			fprintf(stderr,"connection closed. still listening at port %d\n", args.http_port);
+		}else
+			break;
+	}
+#else
 	if (0 < rlen) {
 		fwrite(buf, 1, rlen, dest);
 	}
+#endif /* defined(HTTP) */
 
 	// 時間計測
 	timeval tv_end;
@@ -698,10 +909,16 @@ main(int argc, char *argv[])
 	}
 	
 	// 出力先ファイルクローズ
+#ifdef HTTP
+	if (!args.stdout) {
+		close(dest);
+	}
+#else
 	fflush(dest);
 	if (!args.stdout) {
 		fclose(dest);
 	}
+#endif /* defined(HTTP) */
 	log << "done." << std::endl;
 	
 #ifdef UDP

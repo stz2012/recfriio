@@ -74,4 +74,9 @@ const char BASE_DIR_USBFS[] = "/proc/bus/usb"; // usbfsのディレクトリ
 const int UDP_PORT = 1234;  // UDP のデフォルトポート
 #endif
 
+//
+#ifdef HTTP
+const int HTTP_PORT = 8888;  // HTTP のデフォルトポート
+#endif
+
 #endif /* !defined(_SETTING_HPP_) */
