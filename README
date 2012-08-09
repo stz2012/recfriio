@@ -7,18 +7,18 @@ make でビルドした後、
 チャンネル番号は以下の通りです。引数なしで実行すると同じリストが出力されます。
   13 - 62 : UHF13 - UHF62
   K13 - K63 : CATV13 - CATV63
-  B1 : BS朝日               C1 : 110CS #1
-  B2 : BS-TBS               C2 : 110CS #2
-  B3 : BSジャパン           C3 : 110CS #3
-  B4 : WOWOWプライム        C4 : 110CS #4
-  B5 : WOWOWライブ          C5 : 110CS #5
-  B6 : WOWOWシネマ          C6 : 110CS #6
-  B7 : スターチャンネル2/3  C7 : 110CS #7
-  B8 : BSアニマックス       C8 : 110CS #8
-  B9 : ディズニーチャンネル C9 : 110CS #9
-  B10: BS11                 C10: 110CS #a
-  B11: スターチャンネル1    C11: 110CS #b
-  B12: TwellV               C12: 110CS #c
+  B1 : BS朝日               C1 : ND2  110CS
+  B2 : BS-TBS               C2 : ND4  110CS
+  B3 : WOWOWプライム        C3 : ND6  110CS
+  B4 : BSジャパン           C4 : ND8  110CS
+  B5 : WOWOWライブ          C5 : ND10 110CS
+  B6 : WOWOWシネマ          C6 : ND12 110CS
+  B7 : スターチャンネル2/3  C7 : ND14 110CS
+  B8 : BSアニマックス       C8 : ND16 110CS
+  B9 : ディズニーチャンネル C9 : ND18 110CS
+  B10: BS11                 C10: ND20 110CS
+  B11: スターチャンネル1    C11: ND22 110CS
+  B12: TwellV               C12: ND24 110CS
   B13: FOX bs238
   B14: BSスカパー!
   B15: 放送大学
