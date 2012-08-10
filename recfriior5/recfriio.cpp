@@ -35,6 +35,9 @@
 #include <netinet/in.h>
 #endif /* defined(HTTP) */
 
+/* maximum write length at once */
+#define SIZE_CHUNK 1316
+
 #include <boost/scoped_ptr.hpp>
 
 #include "setting.hpp"
@@ -782,7 +785,8 @@ main(int argc, char *argv[])
 #ifdef HTTP
 			while(rlen > 0) {
 				ssize_t wc;
-				wc = write(dest, buf, rlen);
+				int ws = rlen < SIZE_CHUNK ? rlen : SIZE_CHUNK;
+				wc = write(dest, buf, ws);
 				if(wc < 0) {
 					log << "write failed." << std::endl;
 					break;
@@ -881,7 +885,8 @@ main(int argc, char *argv[])
 #ifdef HTTP
 		while(rlen > 0) {
 			ssize_t wc;
-			wc = write(dest, buf, rlen);
+			int ws = rlen < SIZE_CHUNK ? rlen : SIZE_CHUNK;
+			wc = write(dest, buf, ws);
 			if(wc < 0) {
 				log << "write failed." << std::endl;
 				break;
