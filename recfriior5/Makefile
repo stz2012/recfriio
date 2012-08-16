@@ -5,7 +5,7 @@
 B25      = -DB25
 HDUS     = -DHDUS
 UDP      = -DUDP
-HTTP     = -DHTTP
+#HTTP     = -DHTTP
 TSSL     = -DTSSL
 
 ifdef B25

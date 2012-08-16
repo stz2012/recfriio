@@ -782,6 +782,11 @@ main(int argc, char *argv[])
 			}
 #endif /* defined(TSSL) */
 
+#ifdef UDP
+			// UDP 配信
+			udp.send(buf, rlen);
+#endif /* defined(UDP) */
+
 #ifdef HTTP
 			while(rlen > 0) {
 				ssize_t wc;
@@ -797,11 +802,6 @@ main(int argc, char *argv[])
 #else
 			fwrite(buf, 1, rlen, dest);
 #endif /* defined(HTTP) */
-
-#ifdef UDP
-			// UDP 配信
-			udp.send(buf, rlen);
-#endif /* defined(UDP) */
 
 		} catch (usb_error& e) {
 			if (urb_error_cnt <= URB_ERROR_MAX) {
