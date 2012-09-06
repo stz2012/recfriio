@@ -1,5 +1,6 @@
-recfriio r5 + α
+【recfriio r5 + α（STZ版）】
 Linux用Friio録画プログラム(黒凡/白凡共通)です。
+こちらは亜流版ですのでご注意下さい。
 
 make でビルドした後、
 ./recfriio 録画するチャンネル 録画秒数 出力先ファイル名
