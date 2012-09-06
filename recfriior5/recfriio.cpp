@@ -576,10 +576,16 @@ main(int argc, char *argv[])
 		} catch (b25_error& e) {
 			std::cerr << e.what() << std::endl;
 			
+#ifdef HTTP
+			if (!args.http_mode) {
+#endif /* defined(HTTP) */
 			// エラー時b25を行わず処理続行。終了ステータス1
 			std::cerr << "disable b25 decoding." << std::endl;
 			args.b25 = false;
 			result = 1;
+#ifdef HTTP
+			}
+#endif /* defined(HTTP) */
 		}
 	}
 #endif /* defined(B25) */
@@ -733,9 +739,15 @@ main(int argc, char *argv[])
 					}
 					log << "B25 Error: " << e.what() << std::endl;
 					log << "Continue recording without B25." << std::endl;
+#ifdef HTTP
+					if (!args.http_mode) {
+#endif /* defined(HTTP) */
 					// b25停止、戻り値エラー
 					args.b25 = false;
 					result = 1;
+#ifdef HTTP
+					}
+#endif /* defined(HTTP) */
 				}
 			}
 #endif /* defined(B25) */
@@ -791,13 +803,18 @@ main(int argc, char *argv[])
 			while(rlen > 0) {
 				ssize_t wc;
 				int ws = rlen < SIZE_CHUNK ? rlen : SIZE_CHUNK;
-				wc = write(dest, buf, ws);
-				if(wc < 0) {
-					log << "write failed." << std::endl;
-					break;
+				while(ws > 0) {
+					wc = write(dest, buf, ws);
+					if(wc < 0) {
+						log << "write failed." << std::endl;
+						rlen = 0;
+						buf = NULL;
+						break;
+					}
+					ws -= wc;
+					rlen -= wc;
+					buf += wc;
 				}
-				rlen -= wc;
-				buf += wc;
 			}
 #else
 			fwrite(buf, 1, rlen, dest);
@@ -886,13 +903,18 @@ main(int argc, char *argv[])
 		while(rlen > 0) {
 			ssize_t wc;
 			int ws = rlen < SIZE_CHUNK ? rlen : SIZE_CHUNK;
-			wc = write(dest, buf, ws);
-			if(wc < 0) {
-				log << "write failed." << std::endl;
-				break;
+			while(ws > 0) {
+				wc = write(dest, buf, ws);
+				if(wc < 0) {
+					log << "write failed." << std::endl;
+					rlen = 0;
+					buf = NULL;
+					break;
+				}
+				ws -= wc;
+				rlen -= wc;
+				buf += wc;
 			}
-			rlen -= wc;
-			buf += wc;
 		}
 		if( args.http_mode ){
 			/* close http socket */
