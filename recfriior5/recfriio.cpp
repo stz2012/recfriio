@@ -79,40 +79,40 @@ void usage(char *argv[])
 #endif /* defined(TSSL) */
 		<< " channel recsec destfile" << std::endl;
 	std::cerr << "Channels:" << std::endl;
-	std::cerr << "  13 - 62 : UHF13 - UHF62" << std::endl;
+	std::cerr << "  13 - 62   : UHF13 - UHF62" << std::endl;
 #ifdef HDUS
 	std::cerr << "  K13 - K63 : CATV13 - CATV63" << std::endl;
 #endif /* defined(HDUS) */
-	std::cerr << "  B1 : BS朝日               C1 : ND2  110CS" << std::endl;
-	std::cerr << "  B2 : BS-TBS               C2 : ND4  110CS" << std::endl;
-	std::cerr << "  B3 : WOWOWプライム        C3 : ND6  110CS" << std::endl;
-	std::cerr << "  B4 : BSジャパン           C4 : ND8  110CS" << std::endl;
-	std::cerr << "  B5 : WOWOWライブ          C5 : ND10 110CS" << std::endl;
-	std::cerr << "  B6 : WOWOWシネマ          C6 : ND12 110CS" << std::endl;
-	std::cerr << "  B7 : スターチャンネル2/3  C7 : ND14 110CS" << std::endl;
-	std::cerr << "  B8 : BSアニマックス       C8 : ND16 110CS" << std::endl;
-	std::cerr << "  B9 : ディズニーチャンネル C9 : ND18 110CS" << std::endl;
-	std::cerr << "  B10: BS11                 C10: ND20 110CS" << std::endl;
-	std::cerr << "  B11: スターチャンネル1    C11: ND22 110CS" << std::endl;
-	std::cerr << "  B12: TwellV               C12: ND24 110CS" << std::endl;
-	std::cerr << "  B13: FOX bs238" << std::endl;
-	std::cerr << "  B14: BSスカパー!" << std::endl;
-	std::cerr << "  B15: 放送大学" << std::endl;
-	std::cerr << "  B16: BS日テレ" << std::endl;
-	std::cerr << "  B17: BSフジ" << std::endl;
-	std::cerr << "  B18: NHK BS1" << std::endl;
-	std::cerr << "  B19: NHK BSプレミアム" << std::endl;
-	std::cerr << "  B20: 地デジ難視聴1(NHK/NHK-E/CX)" << std::endl;
-	std::cerr << "  B21: 地デジ難視聴2(NTV/TBS/EX/TX)" << std::endl;
-	std::cerr << "  B22: グリーンチャンネル" << std::endl;
-	std::cerr << "  B23: J SPORTS 1" << std::endl;
-	std::cerr << "  B24: J SPORTS 2" << std::endl;
-	std::cerr << "  B25: IMAGICA BS" << std::endl;
-	std::cerr << "  B26: J SPORTS 3" << std::endl;
-	std::cerr << "  B27: J SPORTS 4" << std::endl;
-	std::cerr << "  B28: BS釣りビジョン" << std::endl;
-	std::cerr << "  B29: 日本映画専門チャンネル" << std::endl;
-	std::cerr << "  B30: D-Life" << std::endl;
+	std::cerr << "  B1 ,BS01_0: BS朝日               C1 ,CS2 : ND2  110CS" << std::endl;
+	std::cerr << "  B2 ,BS01_1: BS-TBS               C2 ,CS4 : ND4  110CS" << std::endl;
+	std::cerr << "  B3 ,BS03_0: WOWOWプライム        C3 ,CS6 : ND6  110CS" << std::endl;
+	std::cerr << "  B4 ,BS03_1: BSジャパン           C4 ,CS8 : ND8  110CS" << std::endl;
+	std::cerr << "  B5 ,BS05_0: WOWOWライブ          C5 ,CS10: ND10 110CS" << std::endl;
+	std::cerr << "  B6 ,BS05_1: WOWOWシネマ          C6 ,CS12: ND12 110CS" << std::endl;
+	std::cerr << "  B7 ,BS07_0: スターチャンネル2/3  C7 ,CS14: ND14 110CS" << std::endl;
+	std::cerr << "  B8 ,BS07_1: BSアニマックス       C8 ,CS16: ND16 110CS" << std::endl;
+	std::cerr << "  B9 ,BS07_2: ディズニーチャンネル C9 ,CS18: ND18 110CS" << std::endl;
+	std::cerr << "  B10,BS09_0: BS11                 C10,CS20: ND20 110CS" << std::endl;
+	std::cerr << "  B11,BS09_1: スターチャンネル1    C11,CS22: ND22 110CS" << std::endl;
+	std::cerr << "  B12,BS09_2: TwellV               C12,CS24: ND24 110CS" << std::endl;
+	std::cerr << "  B13,BS11_0: FOX bs238" << std::endl;
+	std::cerr << "  B14,BS11_1: BSスカパー!" << std::endl;
+	std::cerr << "  B15,BS11_2: 放送大学" << std::endl;
+	std::cerr << "  B16,BS13_0: BS日テレ" << std::endl;
+	std::cerr << "  B17,BS13_1: BSフジ" << std::endl;
+	std::cerr << "  B18,BS15_0: NHK BS1" << std::endl;
+	std::cerr << "  B19,BS15_1: NHK BSプレミアム" << std::endl;
+	std::cerr << "  B20,BS17_0: 地デジ難視聴1(NHK/NHK-E/CX)" << std::endl;
+	std::cerr << "  B21,BS17_1: 地デジ難視聴2(NTV/TBS/EX/TX)" << std::endl;
+	std::cerr << "  B22,BS19_0: グリーンチャンネル" << std::endl;
+	std::cerr << "  B23,BS19_1: J SPORTS 1" << std::endl;
+	std::cerr << "  B24,BS19_2: J SPORTS 2" << std::endl;
+	std::cerr << "  B25,BS21_0: IMAGICA BS" << std::endl;
+	std::cerr << "  B26,BS21_1: J SPORTS 3" << std::endl;
+	std::cerr << "  B27,BS21_2: J SPORTS 4" << std::endl;
+	std::cerr << "  B28,BS23_0: BS釣りビジョン" << std::endl;
+	std::cerr << "  B29,BS23_1: 日本映画専門チャンネル" << std::endl;
+	std::cerr << "  B30,BS23_2: D-Life" << std::endl;
 	exit(1);
 }
 
@@ -164,24 +164,62 @@ parseChannel(Args* args, char* chstr)
 	switch (chstr[0]) {
 		case 'B':
 		case 'b':
-			args->type = TUNER_FRIIO_BLACK;
-			args->band = BAND_BS;
-			chstr++;
-			channel = atoi(chstr);
-			if (channel < 1 || 30 < channel) {
-				std::cerr << "channel must be (B1 <= channel <= B30)." << std::endl;
-				exit(1);
+			if (chstr[1] == 'S' || chstr[1] == 's') {
+				int solt = 8;
+				args->type = TUNER_FRIIO_BLACK;
+				args->band = BAND_BS;
+				chstr += 2;
+				while (isdigit( *chstr ))
+					channel = channel * 10 + ( *chstr++ - '0' );
+				if (channel == 0 || channel > 23 || ( channel & 0x01 ) == 0 || *chstr != '_') {
+					std::cerr << "BS channel node must be (1 <= node <= 23)." << std::endl;
+					exit(1);
+				}
+				if (isdigit( *++chstr ))
+					solt = *chstr++ - '0';
+				if (solt >= 8 || *chstr != '\0') {
+					std::cerr << "BS channel solt must be (0 <= solt <= 7)." << std::endl;
+					exit(1);
+				}
+				// arib仕様(旧機器対策)
+				if (channel == 15)
+					solt++;
+				// TSID合成(登録年情報欠落)
+				channel = 0x4000 | (channel << 4) | solt;
+			} else {
+				args->type = TUNER_FRIIO_BLACK;
+				args->band = BAND_BS;
+				chstr++;
+				channel = atoi(chstr);
+				if (channel < 1 || 30 < channel) {
+					std::cerr << "channel must be (B1 <= channel <= B30)." << std::endl;
+					exit(1);
+				}
 			}
 			break;
 		case 'C':
 		case 'c':
-			args->type = TUNER_FRIIO_BLACK;
-			args->band = BAND_CS;
-			chstr++;
-			channel = atoi(chstr);
-			if (channel < 1 || 12 < channel) {
-				std::cerr << "channel must be (C1 <= channel <= C12)." << std::endl;
+			if (chstr[1] == 'S' || chstr[1] == 's') {
+				args->type = TUNER_FRIIO_BLACK;
+				args->band = BAND_CS;
+				chstr += 2;
+				channel = atoi(chstr);
+				if ((channel & 0x01) == 0) {
+					channel /= 2;
+					if (1 <= channel && channel <= 12)
+						break;
+				}
+				std::cerr << "channel must be (CS2 <= channel <= CS24)." << std::endl;
 				exit(1);
+			} else {
+				args->type = TUNER_FRIIO_BLACK;
+				args->band = BAND_CS;
+				chstr++;
+				channel = atoi(chstr);
+				if (channel < 1 || 12 < channel) {
+					std::cerr << "channel must be (C1 <= channel <= C12)." << std::endl;
+					exit(1);
+				}
 			}
 			break;
 #ifdef HDUS

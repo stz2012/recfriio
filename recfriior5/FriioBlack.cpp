@@ -173,7 +173,24 @@ static void SetChannel_Black(int fd, const uint32_t dwSpace, const uint32_t dwCh
 	static const uint8_t PllConfC[] = {0x40, 0x40, 0x40, 0x40, 0x44, 0x44, 0x44, 0x46, 0x46, 0x40, 0x40, 0x40, 0x46, 0x46, 0x46, 0x40, 0x40, 0x40, 0x40, 0x43, 0x43, 0x47, 0x47, 0x47, 0x47, 0x47, 0x47, 0x47, 0x47, 0x47, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};	// 75回目	+02
 	static const uint8_t PllConfD[] = {0x10, 0x11, 0x30, 0x31, 0x50, 0x51, 0x70, 0x71, 0x72, 0x90, 0x91, 0x92, 0xB0, 0xB1, 0xB2, 0xD0, 0xD1, 0xF1, 0xF2, 0x10, 0x11, 0x30, 0x31, 0x32, 0x50, 0x51, 0x52, 0x70, 0x71, 0x72, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};	// 76回目	+02
 	
-	const uint32_t dwChIndex = dwSpace * 30UL + dwChannel;
+	uint32_t cnt = 0;
+	if (dwSpace == 0 && dwChannel > 0x4000) {
+		// TSid(11-9bitが欠落)からチャンネルNo取得
+		uint8_t  up_tsid = (uint8_t)( dwChannel >> 8 );
+		uint8_t  low_tsid = (uint8_t)( dwChannel & 0xFF );
+		while (1){
+			if (PllConfD[cnt]) {
+				if (PllConfD[cnt] == low_tsid && ( PllConfC[cnt] & 0xF1 ) == up_tsid)
+					break;
+				cnt++;
+			} else {
+				throw traceable_error("unknown channel."); // TODO: 適当なエラークラス
+			}
+		}
+	} else {
+		cnt = dwChannel;
+	}
+	const uint32_t dwChIndex = dwSpace * 30UL + cnt;
 	
 	// 資料
 	// BSAT-2c/3a TsID=4[BSch番号(2byte)][TP番号]
@@ -273,8 +290,11 @@ static void SetChannel_Black(int fd, const uint32_t dwSpace, const uint32_t dwCh
 void
 FriioBlack::setChannel(BandType newBand, int newChannel)
 {
-	if (BAND_BS == newBand && 1 <= newChannel && newChannel <= 30) {
-		SetChannel_Black(tunerFd, 0U, newChannel - 1);
+	if (BAND_BS == newBand) {
+		if (1 <= newChannel && newChannel <= 30)
+			SetChannel_Black(tunerFd, 0U, newChannel - 1);
+		else
+			SetChannel_Black(tunerFd, 0U, newChannel);
 	} else if (BAND_CS == newBand && 1 <= newChannel && newChannel <= 12) {
 		SetChannel_Black(tunerFd, 1U, newChannel - 1);
 	} else {

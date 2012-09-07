@@ -6,38 +6,38 @@ make でビルドした後、
 ./recfriio 録画するチャンネル 録画秒数 出力先ファイル名
 で録画されます。
 チャンネル番号は以下の通りです。引数なしで実行すると同じリストが出力されます。
-  13 - 62 : UHF13 - UHF62
+  13 - 62   : UHF13 - UHF62
   K13 - K63 : CATV13 - CATV63
-  B1 : BS朝日               C1 : ND2  110CS
-  B2 : BS-TBS               C2 : ND4  110CS
-  B3 : WOWOWプライム        C3 : ND6  110CS
-  B4 : BSジャパン           C4 : ND8  110CS
-  B5 : WOWOWライブ          C5 : ND10 110CS
-  B6 : WOWOWシネマ          C6 : ND12 110CS
-  B7 : スターチャンネル2/3  C7 : ND14 110CS
-  B8 : BSアニマックス       C8 : ND16 110CS
-  B9 : ディズニーチャンネル C9 : ND18 110CS
-  B10: BS11                 C10: ND20 110CS
-  B11: スターチャンネル1    C11: ND22 110CS
-  B12: TwellV               C12: ND24 110CS
-  B13: FOX bs238
-  B14: BSスカパー!
-  B15: 放送大学
-  B16: BS日テレ
-  B17: BSフジ
-  B18: NHK BS1
-  B19: NHK BSプレミアム
-  B20: 地デジ難視聴1(NHK/NHK-E/CX)
-  B21: 地デジ難視聴2(NTV/TBS/EX/TX)
-  B22: グリーンチャンネル
-  B23: J SPORTS 1
-  B24: J SPORTS 2
-  B25: IMAGICA BS
-  B26: J SPORTS 3
-  B27: J SPORTS 4
-  B28: BS釣りビジョン
-  B29: 日本映画専門チャンネル
-  B30: D-Life
+  B1 ,BS01_0: BS朝日               C1 ,CS2 : ND2  110CS
+  B2 ,BS01_1: BS-TBS               C2 ,CS4 : ND4  110CS
+  B3 ,BS03_0: WOWOWプライム        C3 ,CS6 : ND6  110CS
+  B4 ,BS03_1: BSジャパン           C4 ,CS8 : ND8  110CS
+  B5 ,BS05_0: WOWOWライブ          C5 ,CS10: ND10 110CS
+  B6 ,BS05_1: WOWOWシネマ          C6 ,CS12: ND12 110CS
+  B7 ,BS07_0: スターチャンネル2/3  C7 ,CS14: ND14 110CS
+  B8 ,BS07_1: BSアニマックス       C8 ,CS16: ND16 110CS
+  B9 ,BS07_2: ディズニーチャンネル C9 ,CS18: ND18 110CS
+  B10,BS09_0: BS11                 C10,CS20: ND20 110CS
+  B11,BS09_1: スターチャンネル1    C11,CS22: ND22 110CS
+  B12,BS09_2: TwellV               C12,CS24: ND24 110CS
+  B13,BS11_0: FOX bs238
+  B14,BS11_1: BSスカパー!
+  B15,BS11_2: 放送大学
+  B16,BS13_0: BS日テレ
+  B17,BS13_1: BSフジ
+  B18,BS15_0: NHK BS1
+  B19,BS15_1: NHK BSプレミアム
+  B20,BS17_0: 地デジ難視聴1(NHK/NHK-E/CX)
+  B21,BS17_1: 地デジ難視聴2(NTV/TBS/EX/TX)
+  B22,BS19_0: グリーンチャンネル
+  B23,BS19_1: J SPORTS 1
+  B24,BS19_2: J SPORTS 2
+  B25,BS21_0: IMAGICA BS
+  B26,BS21_1: J SPORTS 3
+  B27,BS21_2: J SPORTS 4
+  B28,BS23_0: BS釣りビジョン
+  B29,BS23_1: 日本映画専門チャンネル
+  B30,BS23_2: D-Life
 
 録画秒数に'-'を指定すると^C等でinterruptされるまで録画します。
 出力先ファイル名に'-'を指定すると標準出力にTSを出力します。その場合ログは標準エラー出力に出力されます。
@@ -177,8 +177,13 @@ BonDriverのライセンスに加えてARIB STD-B25 仕様確認テストプロ�
 その他:
 このプログラムはAS-ISで提供されます。なにか問題が起こっても責任は持てません。
 
-動作確認環境:
-  Debian GNU/Linux squeeze(stable)
-  Linux 2.6.37.2 SMP PREEMPT x86_64
+Special Thanks:
+・拡張ツール中の人
+・◆N/E9PqspSk / Clworld氏
+・ARIB(資料の無料ダウンロードに対して)
+・2chの「Linuxでfriio」スレッドの皆様
+・2chの「Linuxでテレビ総合」スレッドの皆様
 
-◆N/E9PqspSk / Clworld.
+動作確認環境:
+  CentOS 6.3 GNU/Linux
+  Linux 2.6.32 SMP i686
