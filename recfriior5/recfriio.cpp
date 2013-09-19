@@ -750,6 +750,7 @@ main(int argc, char *argv[])
 	tuner->startStream();
 	// データ読み出し
 	uint32_t urb_error_cnt = 0;
+	uint32_t b25_error_cnt = 0;
 	while (!caughtSignal && (args.forever || time(NULL) <= time_start + args.recsec)) {
 		try {
 			rlen = tuner->getStream((const uint8_t **)&buf, 200);
@@ -775,14 +776,12 @@ main(int argc, char *argv[])
 						log << "Wait for B25 sync" << std::endl;
 						continue;
 					}
-					log << "B25 Error: " << e.what() << std::endl;
-					log << "Continue recording without B25." << std::endl;
+			
 #ifdef HTTP
 					if (!args.http_mode) {
 #endif /* defined(HTTP) */
 					// b25停止、戻り値エラー
-					args.b25 = false;
-					result = 1;
+					throw;
 #ifdef HTTP
 					}
 #endif /* defined(HTTP) */
@@ -865,6 +864,16 @@ main(int argc, char *argv[])
 					log << "Too many URB error." << std::endl;
 				}
 				urb_error_cnt++;
+			}
+		} catch (b25_error& e) {
+			if (b25_error_cnt <= B25_ERROR_MAX) {
+				if(b25_error_cnt == B25_ERROR_MAX){
+					log << "B25 Error: " << e.what() << std::endl;
+					log << "Continue recording without B25." << std::endl;
+					args.b25 = false;
+					result = 1;
+				}
+				b25_error_cnt++;
 			}
 		}
 	}
