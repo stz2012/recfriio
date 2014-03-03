@@ -8,6 +8,7 @@
 
 // エラー最大表示数
 const uint32_t URB_ERROR_MAX = 20;
+const uint32_t B25_ERROR_MAX = 100;
 
 // 受信サイズ(usbfsのバルク転送限界サイズ)
 const uint32_t TSDATASIZE = 16384;
