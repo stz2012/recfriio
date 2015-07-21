@@ -9,6 +9,15 @@
 #include <stdexcept>
 #include <boost/thread.hpp>
 #include <boost/thread/condition.hpp>
+#include <boost/version.hpp>
+#if BOOST_VERSION < 105000
+#include <boost/thread/xtime.hpp>
+namespace boost {
+  enum xtime_compat {
+    TIME_UTC_=TIME_UTC
+  };
+}
+#endif
 
 // バッファのオーバーフロー時に投げられます。
 class overflow_error : public std::runtime_error {
@@ -105,7 +114,7 @@ RingBuf<T>::RingBuf(size_t size) {
 	// リングバッファ設定
 	for (uint32_t i = 0; i < size; i++) {
 		node_top[i].next = (i+1 == size) ? &(node_top[0]) : &(node_top[i+1]);
-		boost::xtime_get(&(node_top[i].timeout), boost::TIME_UTC);
+		boost::xtime_get(&(node_top[i].timeout), boost::TIME_UTC_);
 		node_top[i].timeout_handler = NULL;
 		node_top[i].is_ready = false;
 		node_top[i].is_wait  = false;
@@ -156,7 +165,7 @@ RingBuf<T>::getPushPtr(unsigned int timeout_msec, void (*timeout_handler)(T *)) 
 	}
 	
 	T *data = &(node_push->data);
-	boost::xtime_get(&(node_push->timeout), boost::TIME_UTC);
+	boost::xtime_get(&(node_push->timeout), boost::TIME_UTC_);
 	xtimeAfterMsec(&(node_push->timeout), timeout_msec);
 	node_push->timeout_handler = timeout_handler;
 	node_push->is_wait = true;
@@ -227,7 +236,7 @@ RingBuf<T>::getPopPtr(unsigned int timeout_msec) {
 		}
 		
 		// Timeout時間の厳密性を考えるのが面倒なので適当に処理する。
-		boost::xtime_get(&wait_until, boost::TIME_UTC);
+		boost::xtime_get(&wait_until, boost::TIME_UTC_);
 		xtimeAfterMsec(&wait_until, timeout_msec);
 
 		// timeout_msecで待つ
@@ -271,7 +280,7 @@ RingBuf<T>::peekPopPtrWithoutLock() {
 	if (node_pop != node_push) {
 		if (node_pop->is_ready) {
 			// リセットして返す。
-			boost::xtime_get(&(node_pop->timeout), boost::TIME_UTC);
+			boost::xtime_get(&(node_pop->timeout), boost::TIME_UTC_);
 			node_pop->timeout_handler = NULL;
 			node_pop->is_ready = false;
 			node_pop->is_wait  = false;
@@ -285,7 +294,7 @@ RingBuf<T>::peekPopPtrWithoutLock() {
 		}
 		
 		boost::xtime now;
-		boost::xtime_get(&now, boost::TIME_UTC);
+		boost::xtime_get(&now, boost::TIME_UTC_);
 		if (boost::xtime_cmp(node_pop->timeout, now) <= 0) {
 			// Timeoutを過ぎている。
 			if (node_pop->timeout_handler) {
@@ -294,7 +303,7 @@ RingBuf<T>::peekPopPtrWithoutLock() {
 			}
 			
 			// リセットして次へ。
-			boost::xtime_get(&(node_pop->timeout), boost::TIME_UTC);
+			boost::xtime_get(&(node_pop->timeout), boost::TIME_UTC_);
 			node_pop->timeout_handler = NULL;
 			node_pop->is_ready = false;
 			node_pop->is_wait  = false;

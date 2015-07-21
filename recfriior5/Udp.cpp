@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string.h>
+#include <unistd.h>
 
 Udp::Udp()
     : soc( -1 ), log( NULL )
