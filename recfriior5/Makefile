@@ -1,6 +1,3 @@
-#!/usr/bin/make -f
-# $Id: Makefile 5663 2008-09-15 17:53:59Z clworld $
-
 # options
 B25      = -DB25
 HDUS     = -DHDUS
@@ -29,29 +26,38 @@ ifdef TSSL
   TSSL_OBJS = tssplitter_lite.o
 endif
 
-DIST     = .
+PREFIX = /usr/local
+TARGET = recfriio
+OBJS   = recfriio.o usbops.o error.o IoThread.o Recordable.o AbstractFriio.o FriioWhite.o FriioBlack.o FriioWhiteWrapper.o FriioExpress.o $(B25_OBJS) $(HDUS_OBJS) $(UDP_OBJS) $(TSSL_OBJS)
+DEPEND = Makefile.dep
+
 CC       = gcc
 CXX      = g++
-CXXFLAGS = -O2 -march=native -g -Wall -pthread -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 $(B25) $(HDUS) $(UDP) $(HTTP) $(TSSL) `pkg-config --cflags glib-2.0`
+CXXFLAGS = -O2 -g -Wall -pthread -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 $(B25) $(HDUS) $(UDP) $(HTTP) $(TSSL) `pkg-config --cflags glib-2.0`
 LDFLAGS  = 
-
-OBJS   = recfriio.o usbops.o error.o IoThread.o Recordable.o AbstractFriio.o FriioWhite.o FriioBlack.o FriioWhiteWrapper.o FriioExpress.o $(B25_OBJS) $(HDUS_OBJS) $(UDP_OBJS) $(TSSL_OBJS)
-LIBS   = -lpthread -lboost_thread-mt -lboost_filesystem `pkg-config --libs glib-2.0`
-TARGET = $(DIST)/recfriio
-DEPEND = Makefile.dep
+LIBS     = -lpthread -lboost_thread -lboost_system -lboost_filesystem `pkg-config --libs glib-2.0`
 
 all: $(TARGET)
 
 clean: $(B25_CLEAN)
 	rm -f $(OBJS) $(TARGET) $(DEPEND)
 
+uninstall:
+	rm -vf $(PREFIX)/bin/$(TARGET) /etc/udev/rules.d/99-friio.rules
+
+install: uninstall
+	if [ -d /etc/udev/rules.d -a ! -f /etc/udev/rules.d/99-friio.rules ] ; then \
+		install -m 644 etc/99-friio.rules /etc/udev/rules.d ; \
+	fi
+	install -m 755 $(TARGET) $(PREFIX)/bin
+
 ifdef B25
 clean_b25:
 	cd $(B25_PATH); make clean
 endif
 
-$(TARGET):	$(OBJS) $(B25_OBJS_EXT)
-	$(CXX) $(LDFLAGS) -o $(TARGET) $(OBJS) $(B25_OBJS_EXT) $(LIBS) $(B25_LIBS)
+$(TARGET): $(OBJS) $(B25_OBJS_EXT)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS) $(B25_OBJS_EXT) $(LIBS) $(B25_LIBS)
 
 $(DEPEND):
 	$(CC) -MM $(OBJS:.o=.cpp) > Makefile.dep

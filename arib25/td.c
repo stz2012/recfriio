@@ -26,7 +26,6 @@ typedef struct {
 	int32_t emm;
 	int32_t verbose;
 	int32_t power_ctrl;
-	int64_t skip;
 } OPTION;
 
 static void show_usage();
@@ -81,8 +80,6 @@ static void show_usage()
 	fprintf(stderr, "  -p power_on_control_info\n");
 	fprintf(stderr, "     0: do nothing additionaly\n");
 	fprintf(stderr, "     1: show B-CAS EMM receiving request (default)\n");
-	fprintf(stderr, "  -S skip\n");
-	fprintf(stderr, "     seek skip bytes before read\n");
 	fprintf(stderr, "  -v verbose\n");
 	fprintf(stderr, "     0: silent\n");
 	fprintf(stderr, "     1: show processing status (default)\n");
@@ -98,7 +95,6 @@ static int parse_arg(OPTION *dst, int argc, char **argv)
 	dst->emm = 0;
 	dst->power_ctrl = 1;
 	dst->verbose = 1;
-	dst->skip = 0;
 
 	for(i=1;i<argc;i++){
 		if(argv[i][0] != '-'){
@@ -145,14 +141,6 @@ static int parse_arg(OPTION *dst, int argc, char **argv)
 				i += 1;
 			}
 			break;
-		case 'S':
-			if(argv[i][2]){
-				dst->skip = strtoull(argv[i]+2, NULL, 0);
-			}else{
-				dst->skip = strtoull(argv[i+1], NULL, 0);
-				i += 1;
-			}
-		break;
 		default:
 			fprintf(stderr, "error - unknown option '-%c'\n", argv[i][1]);
 			return argc;
@@ -200,7 +188,7 @@ static void test_arib_std_b25(const char *src, const char *dst, OPTION *opt)
 	
 	_lseeki64(sfd, 0, SEEK_END);
 	total = _telli64(sfd);
-	_lseeki64(sfd, opt->skip, SEEK_SET);
+	_lseeki64(sfd, 0, SEEK_SET);
 
 	b25 = create_arib_std_b25();
 	if(b25 == NULL){
