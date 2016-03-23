@@ -1,0 +1,2 @@
+# friio
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="7a69", ATTRS{idProduct}=="0001", MODE="0664", GROUP="video"
