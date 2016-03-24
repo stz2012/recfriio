@@ -75,7 +75,7 @@ private:
 
     uint8_t r5;
 
-    void send_ctl(uint8_t *data, int fd, int req, int val, int idx, int len);
+    void send_ctl(uint8_t *data, int fd, uint8_t req, uint16_t val, uint16_t idx, uint16_t len);
 
 };
 

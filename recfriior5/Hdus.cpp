@@ -535,7 +535,7 @@ Hdus::UsbProcFixInitB(int fd)
 
 
 void
-Hdus::send_ctl(uint8_t *data, int fd, int req, int val, int idx, int len)
+Hdus::send_ctl(uint8_t *data, int fd, uint8_t req, uint16_t val, uint16_t idx, uint16_t len)
 {
 //    fprintf( stderr, "fd = 0x%x, req = 0x%x, val = 0x%x\n", fd, req, val );
 
