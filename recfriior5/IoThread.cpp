@@ -23,7 +23,7 @@ using namespace std;
  * 送信したURBをキャンセルする。
  */
 static void discard_async_request(AsyncRequest *r) {
-	int ret = usb_discardurb(r->fd, &(r->urb));
+	int ret = usb_discardurb(r->fd, r->urb);
 	// EINVALは該当URBがkernel側のキューにない場合に返されるので無視で問題ない。
 	if (ret < 0 && errno != EINVAL) {
 		if (errno == EINVAL) {
@@ -51,21 +51,25 @@ PushIoThread::operator()() {
 		// リクエスト待ちに空きがある。
 		AsyncRequest *req          = buf->getPushPtr(REQUEST_TIMEOUT_TS, discard_async_request);
 		
-		memset(&(req->urb), '\0', sizeof(usbdevfs_urb));
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,0,0)
+		memset(req->urb, '\0', sizeof(usbdevfs_urb) + sizeof(usbdevfs_iso_packet_desc));
+#else
+		memset(req->urb, '\0', sizeof(usbdevfs_urb));
+#endif
 		memset(req->buf,    '\0', TSDATASIZE);
 		
-		req->urb.type              = USBDEVFS_URB_TYPE_BULK;
-		req->urb.endpoint          = endpoint;
-		req->urb.status            = 0;
-		req->urb.buffer            = req->buf;
-		req->urb.buffer_length     = TSDATASIZE;
-		req->urb.actual_length     = 0;
-		req->urb.number_of_packets = 0;
-		req->urb.signr             = 0;
-		req->urb.usercontext       = req;
+		req->urb->type              = USBDEVFS_URB_TYPE_BULK;
+		req->urb->endpoint          = endpoint;
+		req->urb->status            = 0;
+		req->urb->buffer            = req->buf;
+		req->urb->buffer_length     = TSDATASIZE;
+		req->urb->actual_length     = 0;
+		req->urb->number_of_packets = 0;
+		req->urb->signr             = 0;
+		req->urb->usercontext       = req;
 		req->fd = fd;
 		
-		int r = usb_submiturb(fd, &(req->urb));
+		int r = usb_submiturb(fd, req->urb);
 		if (r < 0) {
 			err(1, "can't send urb");
 		}

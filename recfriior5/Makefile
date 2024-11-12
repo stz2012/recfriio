@@ -33,7 +33,7 @@ DEPEND = Makefile.dep
 
 CC       = gcc
 CXX      = g++
-CXXFLAGS = -O2 -g -Wall -pthread -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 $(B25) $(HDUS) $(UDP) $(HTTP) $(TSSL) `pkg-config --cflags glib-2.0`
+CXXFLAGS = -std=c++03 -O2 -g -Wall -pthread -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 $(B25) $(HDUS) $(UDP) $(HTTP) $(TSSL) `pkg-config --cflags glib-2.0`
 LDFLAGS  = 
 LIBS     = -lpthread -lboost_thread -lboost_system -lboost_filesystem `pkg-config --libs glib-2.0`
 

@@ -96,13 +96,13 @@ AbstractFriio::getStream(const uint8_t** bufp, int timeoutMsec)
 		return 0;
 	}
 	
-	if (req->urb.status != 0) {
+	if (req->urb->status != 0) {
 		std::ostringstream stream;
-		stream << "UrbStatus: " << req->urb.status;
+		stream << "UrbStatus: " << req->urb->status;
 		throw usb_error(stream.str());
 	}
 	
-	int rlen = req->urb.actual_length;
+	int rlen = req->urb->actual_length;
 	
 	*bufp = req->buf;
 	return rlen;

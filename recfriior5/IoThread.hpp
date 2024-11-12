@@ -9,13 +9,29 @@
 #include "usbops.hpp"
 #include "RingBuf.hpp"
 
+#include <stdlib.h>
+#include <linux/version.h>
+
 /**
  * URB送信管理用
  */
-struct AsyncRequest {
-	usbdevfs_urb urb;
+class AsyncRequest {
+public:
+	usbdevfs_urb *urb;
 	int fd;
 	uint8_t buf[TSDATASIZE];
+
+	AsyncRequest() {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,0,0)
+		urb = (usbdevfs_urb*) malloc(sizeof(usbdevfs_urb) + sizeof(usbdevfs_iso_packet_desc));
+#else
+		urb = (usbdevfs_urb*) malloc(sizeof(usbdevfs_urb));
+#endif
+	}
+
+	~AsyncRequest() {
+		free(urb);
+	}
 };
 
 /**
